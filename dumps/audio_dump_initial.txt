@@ -1,0 +1,364 @@
+
+MediaFocusControl dump time: 19:04:00
+
+Audio Focus stack entries (last is top of stack):
+  source:android.os.BinderProxy@8e1529d -- pack: org.smarttube.stable -- client: com.amazon.media.AmazonAudioManager@63658abcom.google.android.exoplayer2.audio.AudioFocusManager$AudioFocusListener@36a0b08 -- gain: GAIN -- flags:  -- loss: none -- notified: true -- uid: 10256 -- attr: AudioAttributes: usage=USAGE_MEDIA content=CONTENT_TYPE_MOVIE flags=0x0 tags= bundle=null -- sdk:34
+
+
+No external focus policy
+
+
+
+ Notify on duck:  true
+
+ In ring or call: false
+
+
+
+Audio event log: focus commands as seen by MediaFocusControl
+10-20 20:39:50:458 abandonAudioFocus() from uid/pid 10256/30902 clientId=com.amazon.media.AmazonAudioManager@7cd358ecom.google.android.exoplayer2.audio.AudioFocusManager$AudioFocusListener@958a3b4
+10-20 20:39:51:321 requestAudioFocus() from uid/pid 10256/30902 clientId=com.amazon.media.AmazonAudioManager@7cd358ecom.google.android.exoplayer2.audio.AudioFocusManager$AudioFocusListener@958a3b4 callingPack=org.smarttube.stable req=1 flags=0x0 sdk=34
+10-20 20:47:37:518 abandonAudioFocus() from uid/pid 10256/30902 clientId=com.amazon.media.AmazonAudioManager@7cd358ecom.google.android.exoplayer2.audio.AudioFocusManager$AudioFocusListener@958a3b4
+10-20 20:47:38:170 requestAudioFocus() from uid/pid 10256/30902 clientId=com.amazon.media.AmazonAudioManager@7cd358ecom.google.android.exoplayer2.audio.AudioFocusManager$AudioFocusListener@958a3b4 callingPack=org.smarttube.stable req=1 flags=0x0 sdk=34
+10-20 20:48:44:801 abandonAudioFocus() from uid/pid 10256/30902 clientId=com.amazon.media.AmazonAudioManager@7cd358ecom.google.android.exoplayer2.audio.AudioFocusManager$AudioFocusListener@958a3b4
+10-20 20:48:45:420 requestAudioFocus() from uid/pid 10256/30902 clientId=com.amazon.media.AmazonAudioManager@7cd358ecom.google.android.exoplayer2.audio.AudioFocusManager$AudioFocusListener@958a3b4 callingPack=org.smarttube.stable req=1 flags=0x0 sdk=34
+10-20 20:49:33:324 abandonAudioFocus() from uid/pid 10256/30902 clientId=com.amazon.media.AmazonAudioManager@7cd358ecom.google.android.exoplayer2.audio.AudioFocusManager$AudioFocusListener@958a3b4
+10-20 20:49:33:969 requestAudioFocus() from uid/pid 10256/30902 clientId=com.amazon.media.AmazonAudioManager@7cd358ecom.google.android.exoplayer2.audio.AudioFocusManager$AudioFocusListener@958a3b4 callingPack=org.smarttube.stable req=1 flags=0x0 sdk=34
+10-20 20:50:32:866 abandonAudioFocus() from uid/pid 10256/30902 clientId=com.amazon.media.AmazonAudioManager@7cd358ecom.google.android.exoplayer2.audio.AudioFocusManager$AudioFocusListener@958a3b4
+10-20 20:50:34:728 requestAudioFocus() from uid/pid 10256/30902 clientId=com.amazon.media.AmazonAudioManager@7cd358ecom.google.android.exoplayer2.audio.AudioFocusManager$AudioFocusListener@958a3b4 callingPack=org.smarttube.stable req=1 flags=0x0 sdk=34
+10-20 20:52:02:211 abandonAudioFocus() from uid/pid 10256/30902 clientId=com.amazon.media.AmazonAudioManager@7cd358ecom.google.android.exoplayer2.audio.AudioFocusManager$AudioFocusListener@958a3b4
+10-20 20:52:02:833 requestAudioFocus() from uid/pid 10256/30902 clientId=com.amazon.media.AmazonAudioManager@7cd358ecom.google.android.exoplayer2.audio.AudioFocusManager$AudioFocusListener@958a3b4 callingPack=org.smarttube.stable req=1 flags=0x0 sdk=34
+10-20 20:52:45:757 abandonAudioFocus() from uid/pid 10256/30902 clientId=com.amazon.media.AmazonAudioManager@7cd358ecom.google.android.exoplayer2.audio.AudioFocusManager$AudioFocusListener@958a3b4
+10-20 20:52:46:960 requestAudioFocus() from uid/pid 10256/30902 clientId=com.amazon.media.AmazonAudioManager@7cd358ecom.google.android.exoplayer2.audio.AudioFocusManager$AudioFocusListener@958a3b4 callingPack=org.smarttube.stable req=1 flags=0x0 sdk=34
+10-20 20:54:10:577 abandonAudioFocus() from uid/pid 10256/30902 clientId=com.amazon.media.AmazonAudioManager@7cd358ecom.google.android.exoplayer2.audio.AudioFocusManager$AudioFocusListener@958a3b4
+10-20 20:54:12:662 requestAudioFocus() from uid/pid 10256/30902 clientId=com.amazon.media.AmazonAudioManager@7cd358ecom.google.android.exoplayer2.audio.AudioFocusManager$AudioFocusListener@958a3b4 callingPack=org.smarttube.stable req=1 flags=0x0 sdk=34
+10-20 20:55:28:865 abandonAudioFocus() from uid/pid 10256/30902 clientId=com.amazon.media.AmazonAudioManager@7cd358ecom.google.android.exoplayer2.audio.AudioFocusManager$AudioFocusListener@958a3b4
+10-20 20:55:29:339 requestAudioFocus() from uid/pid 10256/30902 clientId=com.amazon.media.AmazonAudioManager@7cd358ecom.google.android.exoplayer2.audio.AudioFocusManager$AudioFocusListener@958a3b4 callingPack=org.smarttube.stable req=1 flags=0x0 sdk=34
+10-20 20:56:11:924 abandonAudioFocus() from uid/pid 10256/30902 clientId=com.amazon.media.AmazonAudioManager@7cd358ecom.google.android.exoplayer2.audio.AudioFocusManager$AudioFocusListener@958a3b4
+10-20 20:56:11:954 abandonAudioFocus() from uid/pid 10256/30902 clientId=com.amazon.media.AmazonAudioManager@7cd358ecom.google.android.exoplayer2.audio.AudioFocusManager$AudioFocusListener@958a3b4
+10-20 20:56:43:521 requestAudioFocus() from uid/pid 10256/30902 clientId=com.amazon.media.AmazonAudioManager@7cd358ecom.google.android.exoplayer2.audio.AudioFocusManager$AudioFocusListener@a3957aa callingPack=org.smarttube.stable req=1 flags=0x0 sdk=34
+10-20 20:57:57:011 abandonAudioFocus() from uid/pid 10256/30902 clientId=com.amazon.media.AmazonAudioManager@7cd358ecom.google.android.exoplayer2.audio.AudioFocusManager$AudioFocusListener@a3957aa
+10-20 20:57:57:407 requestAudioFocus() from uid/pid 10256/30902 clientId=com.amazon.media.AmazonAudioManager@7cd358ecom.google.android.exoplayer2.audio.AudioFocusManager$AudioFocusListener@a3957aa callingPack=org.smarttube.stable req=1 flags=0x0 sdk=34
+10-20 20:59:03:919 abandonAudioFocus() from uid/pid 10256/30902 clientId=com.amazon.media.AmazonAudioManager@7cd358ecom.google.android.exoplayer2.audio.AudioFocusManager$AudioFocusListener@a3957aa
+10-20 20:59:04:570 requestAudioFocus() from uid/pid 10256/30902 clientId=com.amazon.media.AmazonAudioManager@7cd358ecom.google.android.exoplayer2.audio.AudioFocusManager$AudioFocusListener@a3957aa callingPack=org.smarttube.stable req=1 flags=0x0 sdk=34
+10-20 21:17:46:462 abandonAudioFocus() from uid/pid 10256/30902 clientId=com.amazon.media.AmazonAudioManager@7cd358ecom.google.android.exoplayer2.audio.AudioFocusManager$AudioFocusListener@a3957aa
+10-20 21:17:47:254 requestAudioFocus() from uid/pid 10256/30902 clientId=com.amazon.media.AmazonAudioManager@7cd358ecom.google.android.exoplayer2.audio.AudioFocusManager$AudioFocusListener@a3957aa callingPack=org.smarttube.stable req=1 flags=0x0 sdk=34
+10-20 21:32:19:736 abandonAudioFocus() from uid/pid 10256/30902 clientId=com.amazon.media.AmazonAudioManager@7cd358ecom.google.android.exoplayer2.audio.AudioFocusManager$AudioFocusListener@a3957aa
+10-20 21:32:20:380 requestAudioFocus() from uid/pid 10256/30902 clientId=com.amazon.media.AmazonAudioManager@7cd358ecom.google.android.exoplayer2.audio.AudioFocusManager$AudioFocusListener@a3957aa callingPack=org.smarttube.stable req=1 flags=0x0 sdk=34
+10-20 21:52:25:235 abandonAudioFocus() from uid/pid 10256/30902 clientId=com.amazon.media.AmazonAudioManager@7cd358ecom.google.android.exoplayer2.audio.AudioFocusManager$AudioFocusListener@a3957aa
+10-20 21:52:25:871 requestAudioFocus() from uid/pid 10256/30902 clientId=com.amazon.media.AmazonAudioManager@7cd358ecom.google.android.exoplayer2.audio.AudioFocusManager$AudioFocusListener@a3957aa callingPack=org.smarttube.stable req=1 flags=0x0 sdk=34
+10-20 22:05:34:961 abandonAudioFocus() from uid/pid 10256/30902 clientId=com.amazon.media.AmazonAudioManager@7cd358ecom.google.android.exoplayer2.audio.AudioFocusManager$AudioFocusListener@a3957aa
+10-20 22:05:35:615 requestAudioFocus() from uid/pid 10256/30902 clientId=com.amazon.media.AmazonAudioManager@7cd358ecom.google.android.exoplayer2.audio.AudioFocusManager$AudioFocusListener@a3957aa callingPack=org.smarttube.stable req=1 flags=0x0 sdk=34
+10-20 22:24:50:666 abandonAudioFocus() from uid/pid 10256/30902 clientId=com.amazon.media.AmazonAudioManager@7cd358ecom.google.android.exoplayer2.audio.AudioFocusManager$AudioFocusListener@a3957aa
+10-20 22:24:51:390 requestAudioFocus() from uid/pid 10256/30902 clientId=com.amazon.media.AmazonAudioManager@7cd358ecom.google.android.exoplayer2.audio.AudioFocusManager$AudioFocusListener@a3957aa callingPack=org.smarttube.stable req=1 flags=0x0 sdk=34
+10-20 22:47:03:078 abandonAudioFocus() from uid/pid 10256/30902 clientId=com.amazon.media.AmazonAudioManager@7cd358ecom.google.android.exoplayer2.audio.AudioFocusManager$AudioFocusListener@a3957aa
+10-20 22:47:03:733 requestAudioFocus() from uid/pid 10256/30902 clientId=com.amazon.media.AmazonAudioManager@7cd358ecom.google.android.exoplayer2.audio.AudioFocusManager$AudioFocusListener@a3957aa callingPack=org.smarttube.stable req=1 flags=0x0 sdk=34
+10-20 22:47:19:243 abandonAudioFocus() from uid/pid 10256/30902 clientId=com.amazon.media.AmazonAudioManager@7cd358ecom.google.android.exoplayer2.audio.AudioFocusManager$AudioFocusListener@a3957aa
+10-20 22:47:19:904 requestAudioFocus() from uid/pid 10256/30902 clientId=com.amazon.media.AmazonAudioManager@7cd358ecom.google.android.exoplayer2.audio.AudioFocusManager$AudioFocusListener@a3957aa callingPack=org.smarttube.stable req=1 flags=0x0 sdk=34
+10-20 23:04:13:513 abandonAudioFocus() from uid/pid 10256/30902 clientId=com.amazon.media.AmazonAudioManager@7cd358ecom.google.android.exoplayer2.audio.AudioFocusManager$AudioFocusListener@a3957aa
+10-20 23:04:14:225 requestAudioFocus() from uid/pid 10256/30902 clientId=com.amazon.media.AmazonAudioManager@7cd358ecom.google.android.exoplayer2.audio.AudioFocusManager$AudioFocusListener@a3957aa callingPack=org.smarttube.stable req=1 flags=0x0 sdk=34
+10-20 23:05:21:022 abandonAudioFocus() from uid/pid 10256/30902 clientId=com.amazon.media.AmazonAudioManager@7cd358ecom.google.android.exoplayer2.audio.AudioFocusManager$AudioFocusListener@a3957aa
+10-20 23:05:21:023 abandonAudioFocus() from uid/pid 10256/30902 clientId=com.amazon.media.AmazonAudioManager@7cd358ecom.google.android.exoplayer2.audio.AudioFocusManager$AudioFocusListener@a3957aa
+10-21 18:51:10:360 requestAudioFocus() from uid/pid 10256/19096 clientId=com.amazon.media.AmazonAudioManager@63658abcom.google.android.exoplayer2.audio.AudioFocusManager$AudioFocusListener@36a0b08 callingPack=org.smarttube.stable req=1 flags=0x0 sdk=34
+10-21 18:53:05:982 abandonAudioFocus() from uid/pid 10256/19096 clientId=com.amazon.media.AmazonAudioManager@63658abcom.google.android.exoplayer2.audio.AudioFocusManager$AudioFocusListener@36a0b08
+10-21 18:53:06:906 requestAudioFocus() from uid/pid 10256/19096 clientId=com.amazon.media.AmazonAudioManager@63658abcom.google.android.exoplayer2.audio.AudioFocusManager$AudioFocusListener@36a0b08 callingPack=org.smarttube.stable req=1 flags=0x0 sdk=34
+10-21 18:57:07:937 abandonAudioFocus() from uid/pid 10256/19096 clientId=com.amazon.media.AmazonAudioManager@63658abcom.google.android.exoplayer2.audio.AudioFocusManager$AudioFocusListener@36a0b08
+10-21 18:57:08:889 requestAudioFocus() from uid/pid 10256/19096 clientId=com.amazon.media.AmazonAudioManager@63658abcom.google.android.exoplayer2.audio.AudioFocusManager$AudioFocusListener@36a0b08 callingPack=org.smarttube.stable req=1 flags=0x0 sdk=34
+10-21 19:00:20:559 abandonAudioFocus() from uid/pid 10256/19096 clientId=com.amazon.media.AmazonAudioManager@63658abcom.google.android.exoplayer2.audio.AudioFocusManager$AudioFocusListener@36a0b08
+10-21 19:00:21:545 requestAudioFocus() from uid/pid 10256/19096 clientId=com.amazon.media.AmazonAudioManager@63658abcom.google.android.exoplayer2.audio.AudioFocusManager$AudioFocusListener@36a0b08 callingPack=org.smarttube.stable req=1 flags=0x0 sdk=34
+
+Stream volumes (device: index)
+- STREAM_VOICE_CALL:
+   Muted: false
+   Min: 1
+   Max: 30
+   Current: 1 (earpiece): 15, 2 (speaker): 14, 4 (headset): 10, 8 (headphone): 10, 10 (bt_sco): 30, 20 (bt_sco_hs): 30, 40 (bt_sco_carkit): 30, 80 (bt_a2dp): 7, 100 (bt_a2dp_hp): 30, 200 (bt_a2dp_spk): 30, 400 (hdmi): 30, 800 (analog_dock): 30, 1000 (digital_dock): 30, 2000 (usb_accessory): 15, 4000 (usb_device): 15, 8000 (remote_submix): 15, 10000 (telephony_tx): 15, 20000 (line): 15, 40000 (hmdi_arc): 30, 80000 (spdif): 30, 100000 (fm_transmitter): 15, 200000 (aux_line): 30, 400000 (speaker_safe): 15, 800000 (ip): 15, 1000000 (bus): 15, 2000000 (proxy): 15, 4000000 (usb_headset): 4, 8000000 (hearing_aid_out): 30, 20000000 (avls_out): 15, 40000000 (default): 3
+   Devices: hdmi
+- STREAM_SYSTEM:
+   Muted: false
+   Min: 0
+   Max: 30
+   Current: 1 (earpiece): 15, 2 (speaker): 14, 4 (headset): 10, 8 (headphone): 10, 10 (bt_sco): 30, 20 (bt_sco_hs): 30, 40 (bt_sco_carkit): 30, 80 (bt_a2dp): 7, 100 (bt_a2dp_hp): 30, 200 (bt_a2dp_spk): 30, 400 (hdmi): 30, 800 (analog_dock): 30, 1000 (digital_dock): 30, 2000 (usb_accessory): 15, 4000 (usb_device): 15, 8000 (remote_submix): 15, 10000 (telephony_tx): 15, 20000 (line): 15, 40000 (hmdi_arc): 30, 80000 (spdif): 30, 100000 (fm_transmitter): 15, 200000 (aux_line): 30, 400000 (speaker_safe): 15, 800000 (ip): 15, 1000000 (bus): 15, 2000000 (proxy): 15, 4000000 (usb_headset): 4, 8000000 (hearing_aid_out): 30, 20000000 (avls_out): 15, 40000000 (default): 3
+   Devices: hdmi
+- STREAM_RING:
+   Muted: false
+   Min: 0
+   Max: 30
+   Current: 1 (earpiece): 15, 2 (speaker): 14, 4 (headset): 10, 8 (headphone): 10, 10 (bt_sco): 30, 20 (bt_sco_hs): 30, 40 (bt_sco_carkit): 30, 80 (bt_a2dp): 7, 100 (bt_a2dp_hp): 30, 200 (bt_a2dp_spk): 30, 400 (hdmi): 30, 800 (analog_dock): 30, 1000 (digital_dock): 30, 2000 (usb_accessory): 15, 4000 (usb_device): 15, 8000 (remote_submix): 15, 10000 (telephony_tx): 15, 20000 (line): 15, 40000 (hmdi_arc): 30, 80000 (spdif): 30, 100000 (fm_transmitter): 15, 200000 (aux_line): 30, 400000 (speaker_safe): 15, 800000 (ip): 15, 1000000 (bus): 15, 2000000 (proxy): 15, 4000000 (usb_headset): 4, 8000000 (hearing_aid_out): 30, 20000000 (avls_out): 15, 40000000 (default): 3
+   Devices: hdmi
+- STREAM_MUSIC:
+   Muted: false
+   Min: 0
+   Max: 30
+   Current: 1 (earpiece): 15, 2 (speaker): 14, 4 (headset): 10, 8 (headphone): 10, 10 (bt_sco): 30, 20 (bt_sco_hs): 30, 40 (bt_sco_carkit): 30, 80 (bt_a2dp): 7, 100 (bt_a2dp_hp): 30, 200 (bt_a2dp_spk): 30, 400 (hdmi): 30, 800 (analog_dock): 30, 1000 (digital_dock): 30, 2000 (usb_accessory): 15, 4000 (usb_device): 15, 8000 (remote_submix): 15, 10000 (telephony_tx): 15, 20000 (line): 15, 40000 (hmdi_arc): 30, 80000 (spdif): 30, 100000 (fm_transmitter): 15, 200000 (aux_line): 30, 400000 (speaker_safe): 15, 800000 (ip): 15, 1000000 (bus): 15, 2000000 (proxy): 15, 4000000 (usb_headset): 4, 8000000 (hearing_aid_out): 30, 20000000 (avls_out): 15, 40000000 (default): 3
+   Devices: hdmi
+- STREAM_ALARM:
+   Muted: false
+   Min: 1
+   Max: 30
+   Current: 1 (earpiece): 15, 2 (speaker): 14, 4 (headset): 10, 8 (headphone): 10, 10 (bt_sco): 30, 20 (bt_sco_hs): 30, 40 (bt_sco_carkit): 30, 80 (bt_a2dp): 7, 100 (bt_a2dp_hp): 30, 200 (bt_a2dp_spk): 30, 400 (hdmi): 30, 800 (analog_dock): 30, 1000 (digital_dock): 30, 2000 (usb_accessory): 15, 4000 (usb_device): 15, 8000 (remote_submix): 15, 10000 (telephony_tx): 15, 20000 (line): 15, 40000 (hmdi_arc): 30, 80000 (spdif): 30, 100000 (fm_transmitter): 15, 200000 (aux_line): 30, 400000 (speaker_safe): 15, 800000 (ip): 15, 1000000 (bus): 15, 2000000 (proxy): 15, 4000000 (usb_headset): 4, 8000000 (hearing_aid_out): 30, 20000000 (avls_out): 15, 40000000 (default): 3
+   Devices: hdmi
+- STREAM_NOTIFICATION:
+   Muted: false
+   Min: 0
+   Max: 30
+   Current: 1 (earpiece): 15, 2 (speaker): 14, 4 (headset): 10, 8 (headphone): 10, 10 (bt_sco): 30, 20 (bt_sco_hs): 30, 40 (bt_sco_carkit): 30, 80 (bt_a2dp): 7, 100 (bt_a2dp_hp): 30, 200 (bt_a2dp_spk): 30, 400 (hdmi): 30, 800 (analog_dock): 30, 1000 (digital_dock): 30, 2000 (usb_accessory): 15, 4000 (usb_device): 15, 8000 (remote_submix): 15, 10000 (telephony_tx): 15, 20000 (line): 15, 40000 (hmdi_arc): 30, 80000 (spdif): 30, 100000 (fm_transmitter): 15, 200000 (aux_line): 30, 400000 (speaker_safe): 15, 800000 (ip): 15, 1000000 (bus): 15, 2000000 (proxy): 15, 4000000 (usb_headset): 4, 8000000 (hearing_aid_out): 30, 20000000 (avls_out): 15, 40000000 (default): 3
+   Devices: hdmi
+- STREAM_BLUETOOTH_SCO:
+   Muted: false
+   Min: 0
+   Max: 30
+   Current: 1 (earpiece): 15, 2 (speaker): 14, 4 (headset): 10, 8 (headphone): 10, 10 (bt_sco): 30, 20 (bt_sco_hs): 30, 40 (bt_sco_carkit): 30, 80 (bt_a2dp): 7, 100 (bt_a2dp_hp): 30, 200 (bt_a2dp_spk): 30, 400 (hdmi): 30, 800 (analog_dock): 30, 1000 (digital_dock): 30, 2000 (usb_accessory): 15, 4000 (usb_device): 15, 8000 (remote_submix): 15, 10000 (telephony_tx): 15, 20000 (line): 15, 40000 (hmdi_arc): 30, 80000 (spdif): 30, 100000 (fm_transmitter): 15, 200000 (aux_line): 30, 400000 (speaker_safe): 15, 800000 (ip): 15, 1000000 (bus): 15, 2000000 (proxy): 15, 4000000 (usb_headset): 4, 8000000 (hearing_aid_out): 30, 20000000 (avls_out): 15, 40000000 (default): 3
+   Devices: hdmi
+- STREAM_SYSTEM_ENFORCED:
+   Muted: false
+   Min: 0
+   Max: 30
+   Current: 1 (earpiece): 15, 2 (speaker): 14, 4 (headset): 10, 8 (headphone): 10, 10 (bt_sco): 30, 20 (bt_sco_hs): 30, 40 (bt_sco_carkit): 30, 80 (bt_a2dp): 7, 100 (bt_a2dp_hp): 30, 200 (bt_a2dp_spk): 30, 400 (hdmi): 30, 800 (analog_dock): 30, 1000 (digital_dock): 30, 2000 (usb_accessory): 15, 4000 (usb_device): 15, 8000 (remote_submix): 15, 10000 (telephony_tx): 15, 20000 (line): 15, 40000 (hmdi_arc): 30, 80000 (spdif): 30, 100000 (fm_transmitter): 15, 200000 (aux_line): 30, 400000 (speaker_safe): 15, 800000 (ip): 15, 1000000 (bus): 15, 2000000 (proxy): 15, 4000000 (usb_headset): 4, 8000000 (hearing_aid_out): 30, 20000000 (avls_out): 15, 40000000 (default): 3
+   Devices: hdmi
+- STREAM_DTMF:
+   Muted: false
+   Min: 0
+   Max: 30
+   Current: 1 (earpiece): 15, 2 (speaker): 14, 4 (headset): 10, 8 (headphone): 10, 10 (bt_sco): 30, 20 (bt_sco_hs): 30, 40 (bt_sco_carkit): 30, 80 (bt_a2dp): 7, 100 (bt_a2dp_hp): 30, 200 (bt_a2dp_spk): 30, 400 (hdmi): 30, 800 (analog_dock): 30, 1000 (digital_dock): 30, 2000 (usb_accessory): 15, 4000 (usb_device): 15, 8000 (remote_submix): 15, 10000 (telephony_tx): 15, 20000 (line): 15, 40000 (hmdi_arc): 30, 80000 (spdif): 30, 100000 (fm_transmitter): 15, 200000 (aux_line): 30, 400000 (speaker_safe): 15, 800000 (ip): 15, 1000000 (bus): 15, 2000000 (proxy): 15, 4000000 (usb_headset): 4, 8000000 (hearing_aid_out): 30, 20000000 (avls_out): 15, 40000000 (default): 3
+   Devices: hdmi
+- STREAM_TTS:
+   Muted: false
+   Min: 0
+   Max: 30
+   Current: 1 (earpiece): 15, 2 (speaker): 14, 4 (headset): 10, 8 (headphone): 10, 10 (bt_sco): 30, 20 (bt_sco_hs): 30, 40 (bt_sco_carkit): 30, 80 (bt_a2dp): 7, 100 (bt_a2dp_hp): 30, 200 (bt_a2dp_spk): 30, 400 (hdmi): 30, 800 (analog_dock): 30, 1000 (digital_dock): 30, 2000 (usb_accessory): 15, 4000 (usb_device): 15, 8000 (remote_submix): 15, 10000 (telephony_tx): 15, 20000 (line): 15, 40000 (hmdi_arc): 30, 80000 (spdif): 30, 100000 (fm_transmitter): 15, 200000 (aux_line): 30, 400000 (speaker_safe): 15, 800000 (ip): 15, 1000000 (bus): 15, 2000000 (proxy): 15, 4000000 (usb_headset): 4, 8000000 (hearing_aid_out): 30, 20000000 (avls_out): 15, 40000000 (default): 3
+   Devices: speaker
+- STREAM_ACCESSIBILITY:
+   Muted: false
+   Min: 1
+   Max: 15
+   Current: 1 (earpiece): 8, 2 (speaker): 7, 4 (headset): 5, 8 (headphone): 5, 10 (bt_sco): 15, 20 (bt_sco_hs): 15, 40 (bt_sco_carkit): 15, 80 (bt_a2dp): 4, 100 (bt_a2dp_hp): 15, 200 (bt_a2dp_spk): 15, 400 (hdmi): 15, 800 (analog_dock): 15, 1000 (digital_dock): 15, 2000 (usb_accessory): 8, 4000 (usb_device): 8, 8000 (remote_submix): 8, 10000 (telephony_tx): 8, 20000 (line): 8, 40000 (hmdi_arc): 15, 80000 (spdif): 15, 100000 (fm_transmitter): 8, 200000 (aux_line): 15, 400000 (speaker_safe): 8, 800000 (ip): 8, 1000000 (bus): 8, 2000000 (proxy): 8, 4000000 (usb_headset): 2, 8000000 (hearing_aid_out): 15, 20000000 (avls_out): 8, 40000000 (default): 2
+   Devices: hdmi
+
+- mute affected streams = 0x2f
+
+Ringer mode: 
+- mode (internal) = NORMAL
+- mode (external) = NORMAL
+- ringer mode affected streams = 0x80 (STREAM_SYSTEM_ENFORCED)
+- ringer mode muted streams = 0x0
+- delegate = ZenModeHelper
+
+Audio routes:
+  mMainType=0x8
+
+Other state:
+  mVolumeController=VolumeController(android.os.BinderProxy@18a3312,mVisible=false)
+  mSafeMediaVolumeState=SAFE_MEDIA_VOLUME_ACTIVE
+  mSafeMediaVolumeIndex=100
+  mSafeUsbMediaVolumeIndex=40
+  mSafeUsbMediaVolumeDbfs=-37.0
+  sIndependentA11yVolume=false
+  mPendingVolumeCommand=null
+  mMusicActiveMs=0
+  mMcc=0
+  mCameraSoundForced=false
+  mHasVibrator=false
+  mVolumePolicy=VolumePolicy[volumeDownToEnterSilent=false,volumeUpToExitSilent=false,doNotDisturbWhenSilent=false,vibrateToSilentDebounce=400]
+  mAvrcpAbsVolSupported=false
+
+Audio policies:
+Audio event log: dynamic policy events (logged when command received by AudioService)
+
+PlaybackActivityMonitor dump time: 19:04:00
+
+  playback listeners:
+ (S)com.android.server.audio.PlaybackActivityMonitor$PlayMonitorClient@5536ae3 (S)com.android.server.audio.PlaybackActivityMonitor$PlayMonitorClient@da7dce0
+
+
+  players:
+  ID:15 -- type:android.media.SoundPool -- u/pid:1000/3389 -- state:idle -- attr:AudioAttributes: usage=USAGE_ASSISTANCE_SONIFICATION content=CONTENT_TYPE_SONIFICATION flags=0x0 tags= bundle=null
+  ID:23 -- type:android.media.SoundPool -- u/pid:1000/3834 -- state:idle -- attr:AudioAttributes: usage=USAGE_ASSISTANCE_SONIFICATION content=CONTENT_TYPE_SONIFICATION flags=0x0 tags= bundle=null
+  ID:39 -- type:android.media.MediaPlayer -- u/pid:1000/3389 -- state:idle -- attr:AudioAttributes: usage=USAGE_MEDIA content=CONTENT_TYPE_MUSIC flags=0x10000000 tags= bundle=null
+  ID:55 -- type:android.media.MediaPlayer -- u/pid:1000/3389 -- state:idle -- attr:AudioAttributes: usage=USAGE_MEDIA content=CONTENT_TYPE_MUSIC flags=0x10000000 tags= bundle=null
+  ID:71 -- type:android.media.MediaPlayer -- u/pid:1000/3389 -- state:idle -- attr:AudioAttributes: usage=USAGE_MEDIA content=CONTENT_TYPE_MUSIC flags=0x10000000 tags= bundle=null
+  ID:79 -- type:android.media.MediaPlayer -- u/pid:1000/3389 -- state:stopped -- attr:AudioAttributes: usage=USAGE_NOTIFICATION_RINGTONE content=CONTENT_TYPE_SONIFICATION flags=0x0 tags= bundle=null
+  ID:111 -- type:OpenSL ES AudioPlayer (Buffer Queue) -- u/pid:10199/8717 -- state:idle -- attr:AudioAttributes: usage=USAGE_MEDIA content=CONTENT_TYPE_UNKNOWN flags=0x0 tags= bundle=null
+  ID:254623 -- type:android.media.AudioTrack -- u/pid:10256/19096 -- state:started -- attr:AudioAttributes: usage=USAGE_MEDIA content=CONTENT_TYPE_MOVIE flags=0x200 tags= bundle=null
+
+  ducked players piids:
+
+  muted player piids:
+
+  banned uids:
+
+Audio event log: playback activity as reported through PlayerBase
+10-21 18:50:11:626 player piid:15 state:started
+10-21 18:50:12:605 player piid:15 state:started
+10-21 18:50:12:747 player piid:15 state:started
+10-21 18:50:13:227 player piid:15 state:started
+10-21 18:50:14:807 player piid:15 state:started
+10-21 18:50:14:845 player piid:15 state:started
+10-21 18:50:15:980 player piid:15 state:started
+10-21 18:50:17:047 player piid:15 state:started
+10-21 18:50:17:728 player piid:15 state:started
+10-21 18:50:17:892 player piid:15 state:started
+10-21 18:50:20:589 player piid:15 state:started
+10-21 18:50:20:627 player piid:15 state:started
+10-21 18:50:21:046 player piid:15 state:started
+10-21 18:50:21:387 player piid:15 state:started
+10-21 18:50:21:550 player piid:15 state:started
+10-21 18:50:21:868 player piid:15 state:started
+10-21 18:50:22:125 player piid:15 state:started
+10-21 18:50:22:286 player piid:15 state:started
+10-21 18:50:24:540 player piid:15 state:started
+10-21 18:50:27:993 player piid:15 state:started
+10-21 18:50:28:321 player piid:15 state:started
+10-21 18:50:28:604 player piid:15 state:started
+10-21 18:50:46:226 player piid:15 state:started
+10-21 18:50:46:646 player piid:15 state:started
+10-21 18:50:52:271 player piid:15 state:started
+10-21 18:50:52:676 player piid:15 state:started
+10-21 18:50:52:847 player piid:15 state:started
+10-21 18:50:53:007 player piid:15 state:started
+10-21 18:50:53:148 player piid:15 state:started
+10-21 18:50:53:307 player piid:15 state:started
+10-21 18:50:53:467 player piid:15 state:started
+10-21 18:50:53:587 player piid:15 state:started
+10-21 18:50:53:887 player piid:15 state:started
+10-21 18:50:54:149 player piid:15 state:started
+10-21 18:50:54:829 player piid:15 state:started
+10-21 18:50:54:988 player piid:15 state:started
+10-21 18:50:55:146 player piid:15 state:started
+10-21 18:50:55:288 player piid:15 state:started
+10-21 18:50:55:743 player piid:15 state:started
+10-21 18:50:55:948 player piid:15 state:started
+10-21 18:50:56:468 player piid:15 state:started
+10-21 18:50:58:353 player piid:15 state:started
+10-21 18:50:58:629 player piid:15 state:started
+10-21 18:50:58:946 player piid:15 state:started
+10-21 18:51:01:279 player piid:15 state:started
+10-21 18:51:01:345 player piid:15 state:started
+10-21 18:51:01:611 player piid:15 state:started
+10-21 18:51:02:091 player piid:15 state:started
+10-21 18:51:04:688 player piid:15 state:started
+10-21 18:51:10:708 new player piid:254599 uid/pid:10256/19096 type:android.media.AudioTrack attr:AudioAttributes: usage=USAGE_MEDIA content=CONTENT_TYPE_MOVIE flags=0x200 tags= bundle=null
+10-21 18:51:11:375 player piid:254599 state:started
+10-21 18:53:04:927 player piid:254599 state:paused
+10-21 18:53:04:935 player piid:254599 state:started
+10-21 18:53:05:548 player piid:254599 state:stopped
+10-21 18:53:05:991 player piid:254599 state:stopped
+10-21 18:53:05:991 releasing player piid:254599
+10-21 18:53:07:129 new player piid:254607 uid/pid:10256/19096 type:android.media.AudioTrack attr:AudioAttributes: usage=USAGE_MEDIA content=CONTENT_TYPE_MOVIE flags=0x200 tags= bundle=null
+10-21 18:53:07:663 player piid:254607 state:started
+10-21 18:53:24:265 player piid:15 state:started
+10-21 18:53:24:818 player piid:15 state:started
+10-21 18:53:25:035 player piid:15 state:started
+10-21 18:53:25:358 player piid:15 state:started
+10-21 18:53:28:028 player piid:15 state:started
+10-21 18:53:28:378 player piid:15 state:started
+10-21 18:53:28:935 player piid:15 state:started
+10-21 18:53:29:220 player piid:15 state:started
+10-21 18:53:29:397 player piid:15 state:started
+10-21 18:53:29:557 player piid:15 state:started
+10-21 18:53:29:796 player piid:15 state:started
+10-21 18:53:30:038 player piid:15 state:started
+10-21 18:53:30:216 player piid:15 state:started
+10-21 18:53:30:517 player piid:15 state:started
+10-21 18:53:31:022 player piid:15 state:started
+10-21 18:53:31:333 player piid:15 state:started
+10-21 18:53:31:538 player piid:15 state:started
+10-21 18:53:31:741 player piid:15 state:started
+10-21 18:53:32:096 player piid:15 state:started
+10-21 18:53:32:296 player piid:15 state:started
+10-21 18:53:32:475 player piid:15 state:started
+10-21 18:53:32:677 player piid:15 state:started
+10-21 18:53:32:837 player piid:15 state:started
+10-21 18:53:33:015 player piid:15 state:started
+10-21 18:53:33:215 player piid:15 state:started
+10-21 18:53:33:435 player piid:15 state:started
+10-21 18:53:33:677 player piid:15 state:started
+10-21 18:53:34:156 player piid:15 state:started
+10-21 18:53:35:216 player piid:15 state:started
+10-21 18:53:36:152 player piid:15 state:started
+10-21 18:57:07:405 player piid:254607 state:stopped
+10-21 18:57:07:947 player piid:254607 state:stopped
+10-21 18:57:07:947 releasing player piid:254607
+10-21 18:57:09:158 new player piid:254615 uid/pid:10256/19096 type:android.media.AudioTrack attr:AudioAttributes: usage=USAGE_MEDIA content=CONTENT_TYPE_MOVIE flags=0x200 tags= bundle=null
+10-21 18:57:09:275 player piid:254615 state:started
+10-21 19:00:19:790 player piid:254615 state:stopped
+10-21 19:00:20:570 player piid:254615 state:stopped
+10-21 19:00:20:570 releasing player piid:254615
+10-21 19:00:21:809 new player piid:254623 uid/pid:10256/19096 type:android.media.AudioTrack attr:AudioAttributes: usage=USAGE_MEDIA content=CONTENT_TYPE_MOVIE flags=0x200 tags= bundle=null
+10-21 19:00:21:949 player piid:254623 state:started
+10-21 19:00:29:160 player piid:254623 state:paused
+10-21 19:02:08:043 player piid:254623 state:started
+
+RecordActivityMonitor dump time: 19:04:00
+
+
+Audio event log: recording activity as reported through AudioSystem.AudioRecordingCallback
+10-05 08:27:59:987 rec start uid:10143 session:252905 src:MIC pack:com.amazon.vizzini
+10-05 08:28:00:103 rec stop  uid:10143 session:252905 src:MIC
+10-15 22:31:28:276 rec start uid:10143 session:265769 src:MIC pack:com.amazon.vizzini
+10-15 22:31:28:437 rec stop  uid:10143 session:265769 src:MIC
+
+
+
+Event logs:
+Audio event log: phone state (logged after successfull call to AudioSystem.setPhoneState(int))
+
+
+Audio event log: wired device connection (logged before onSetWiredDeviceConnectionState() is executed)
+10-14 20:44:42:552 setWiredDeviceConnectionState( type:400 state:DEVICE_STATE_UNAVAILABLE addr: name:) from android
+10-15 18:14:16:435 setWiredDeviceConnectionState( type:400 state:DEVICE_STATE_AVAILABLE addr: name:) from android
+10-15 19:58:24:726 setWiredDeviceConnectionState( type:400 state:DEVICE_STATE_UNAVAILABLE addr: name:) from android
+10-15 21:25:50:550 setWiredDeviceConnectionState( type:400 state:DEVICE_STATE_AVAILABLE addr: name:) from android
+10-15 22:31:00:738 setWiredDeviceConnectionState( type:400 state:DEVICE_STATE_UNAVAILABLE addr: name:) from android
+10-15 22:31:00:888 setWiredDeviceConnectionState( type:400 state:DEVICE_STATE_AVAILABLE addr: name:) from android
+10-15 22:31:01:208 setWiredDeviceConnectionState( type:400 state:DEVICE_STATE_UNAVAILABLE addr: name:) from android
+10-15 22:31:01:633 setWiredDeviceConnectionState( type:400 state:DEVICE_STATE_AVAILABLE addr: name:) from android
+10-16 00:06:31:178 setWiredDeviceConnectionState( type:400 state:DEVICE_STATE_UNAVAILABLE addr: name:) from android
+10-16 00:06:31:245 setWiredDeviceConnectionState( type:400 state:DEVICE_STATE_AVAILABLE addr: name:) from android
+10-16 00:06:31:667 setWiredDeviceConnectionState( type:400 state:DEVICE_STATE_UNAVAILABLE addr: name:) from android
+10-16 18:58:12:064 setWiredDeviceConnectionState( type:400 state:DEVICE_STATE_AVAILABLE addr: name:) from android
+10-16 22:17:07:363 setWiredDeviceConnectionState( type:400 state:DEVICE_STATE_UNAVAILABLE addr: name:) from android
+10-18 11:35:13:489 setWiredDeviceConnectionState( type:400 state:DEVICE_STATE_AVAILABLE addr: name:) from android
+10-18 14:55:06:076 setWiredDeviceConnectionState( type:400 state:DEVICE_STATE_UNAVAILABLE addr: name:) from android
+10-18 14:55:06:138 setWiredDeviceConnectionState( type:400 state:DEVICE_STATE_AVAILABLE addr: name:) from android
+10-18 14:55:06:587 setWiredDeviceConnectionState( type:400 state:DEVICE_STATE_UNAVAILABLE addr: name:) from android
+10-18 14:58:15:347 setWiredDeviceConnectionState( type:400 state:DEVICE_STATE_AVAILABLE addr: name:) from android
+10-19 13:25:45:468 setWiredDeviceConnectionState( type:400 state:DEVICE_STATE_UNAVAILABLE addr: name:) from android
+10-19 13:25:46:047 setWiredDeviceConnectionState( type:400 state:DEVICE_STATE_AVAILABLE addr: name:) from android
+10-19 20:07:49:531 setWiredDeviceConnectionState( type:400 state:DEVICE_STATE_UNAVAILABLE addr: name:) from android
+10-19 20:33:33:296 setWiredDeviceConnectionState( type:400 state:DEVICE_STATE_AVAILABLE addr: name:) from android
+10-19 22:08:11:576 setWiredDeviceConnectionState( type:400 state:DEVICE_STATE_UNAVAILABLE addr: name:) from android
+10-20 15:15:44:666 setWiredDeviceConnectionState( type:400 state:DEVICE_STATE_AVAILABLE addr: name:) from android
+10-20 15:39:18:635 setWiredDeviceConnectionState( type:400 state:DEVICE_STATE_UNAVAILABLE addr: name:) from android
+10-20 16:20:18:597 setWiredDeviceConnectionState( type:400 state:DEVICE_STATE_AVAILABLE addr: name:) from android
+10-20 17:35:38:377 setWiredDeviceConnectionState( type:400 state:DEVICE_STATE_UNAVAILABLE addr: name:) from android
+10-20 17:59:33:924 setWiredDeviceConnectionState( type:400 state:DEVICE_STATE_AVAILABLE addr: name:) from android
+10-20 23:05:24:210 setWiredDeviceConnectionState( type:400 state:DEVICE_STATE_UNAVAILABLE addr: name:) from android
+10-21 18:38:11:556 setWiredDeviceConnectionState( type:400 state:DEVICE_STATE_AVAILABLE addr: name:) from android
+
+
+Audio event log: force use (logged before setForceUse() is executed)
+10-11 22:00:00:032 setForceUse(FOR_DOCK, FORCE_ANALOG_DOCK) due to readDockAudioSettings
+10-12 07:00:00:031 setForceUse(FOR_DOCK, FORCE_ANALOG_DOCK) due to readDockAudioSettings
+10-12 22:00:00:032 setForceUse(FOR_DOCK, FORCE_ANALOG_DOCK) due to readDockAudioSettings
+10-13 07:00:00:034 setForceUse(FOR_DOCK, FORCE_ANALOG_DOCK) due to readDockAudioSettings
+10-13 22:00:00:030 setForceUse(FOR_DOCK, FORCE_ANALOG_DOCK) due to readDockAudioSettings
+10-14 07:00:00:035 setForceUse(FOR_DOCK, FORCE_ANALOG_DOCK) due to readDockAudioSettings
+10-14 22:00:00:025 setForceUse(FOR_DOCK, FORCE_ANALOG_DOCK) due to readDockAudioSettings
+10-15 07:00:00:037 setForceUse(FOR_DOCK, FORCE_ANALOG_DOCK) due to readDockAudioSettings
+10-15 22:00:00:033 setForceUse(FOR_DOCK, FORCE_ANALOG_DOCK) due to readDockAudioSettings
+10-16 07:00:00:029 setForceUse(FOR_DOCK, FORCE_ANALOG_DOCK) due to readDockAudioSettings
+10-16 22:00:00:034 setForceUse(FOR_DOCK, FORCE_ANALOG_DOCK) due to readDockAudioSettings
+10-17 07:00:05:027 setForceUse(FOR_DOCK, FORCE_ANALOG_DOCK) due to readDockAudioSettings
+10-17 22:00:00:036 setForceUse(FOR_DOCK, FORCE_ANALOG_DOCK) due to readDockAudioSettings
+10-18 07:00:00:031 setForceUse(FOR_DOCK, FORCE_ANALOG_DOCK) due to readDockAudioSettings
+10-18 22:00:00:036 setForceUse(FOR_DOCK, FORCE_ANALOG_DOCK) due to readDockAudioSettings
+10-19 07:00:00:032 setForceUse(FOR_DOCK, FORCE_ANALOG_DOCK) due to readDockAudioSettings
+10-19 22:00:00:033 setForceUse(FOR_DOCK, FORCE_ANALOG_DOCK) due to readDockAudioSettings
+10-20 07:00:00:029 setForceUse(FOR_DOCK, FORCE_ANALOG_DOCK) due to readDockAudioSettings
+10-20 22:00:00:046 setForceUse(FOR_DOCK, FORCE_ANALOG_DOCK) due to readDockAudioSettings
+10-21 07:00:00:030 setForceUse(FOR_DOCK, FORCE_ANALOG_DOCK) due to readDockAudioSettings
+
+
+Audio event log: volume changes (logged when command received by AudioService)
+10-01 13:45:04:630 setStreamVolume(stream:STREAM_MUSIC index:7 flags:0x41) from com.android.bluetooth

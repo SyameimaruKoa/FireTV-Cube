@@ -1,0 +1,18 @@
+# Audio flinger routing matrix - Fire TV Cube Gen 2 (raven), Fire OS 7.7.1.3
+# hint = 0 (HDMI not active), com.cubespeaker.router service running
+# command: Beep2 <content> <usage> <flags> 4 700
+
+## AUTO_OUT (vizzini TTS attributes: content=2 usage=1 flags=0x10000000)
+  thread: AudioOut_D
+  Output device: 0x2 (AUDIO_DEVICE_OUT_SPEAKER)
+  0    yes  10523  280305 A  0x000 00000001 00000001  48000  7  -1.4  -1.4     0  0000EA00 192000  132096 A       770        0 EBA38000 00000000
+
+## plain media (content=2 usage=1 flags=0)
+  thread: AudioOut_15
+  Output device: 0x40000000 (AUDIO_DEVICE_OUT_DEFAULT|AUDIO_DEVICE_OUT_STUB)
+  2    yes  10547  280313 A  0x000 00000001 00000001  48000  3  -1.4  -1.4     0  0000E4C0 192000  133440 A       962        0 EC254000 00000000
+
+## AUTO_OUT + usage=13 (content=2 usage=13 flags=0x10000000)
+  thread: AudioOut_D
+  Output device: 0x2 (AUDIO_DEVICE_OUT_SPEAKER)
+  0    yes  10568  280321 A  0x000 00000001 00000001  48000  7  -1.4  -1.4     0  0000ED00 192000  131328 A         0        0 EBA38000 00000000

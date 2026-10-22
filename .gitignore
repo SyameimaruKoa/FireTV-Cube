@@ -1,0 +1,10 @@
+.work/
+*.apk
+*.apks
+*.dex
+*.vdex
+*.cdex
+*.odex
+*.oat
+*.img
+*.zip
