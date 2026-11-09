@@ -11,15 +11,21 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
+import android.os.SystemClock;
 import android.util.Log;
 
 /**
- * Keeps the Fire OS "HDMI out state hint" at 0 (HDMI not active).
+ * Keeps the Fire OS "HDMI out state hint" at 0 (HDMI not active) and keeps the
+ * built-in speaker amplifier unmuted.
  *
  * The hint only changes routing for AudioAttributes carrying
  * AmazonAudioManager.FLAG_AUTO_OUT (0x10000000). Alexa TTS uses exactly that flag,
  * so it is played on the Cube's built-in speaker while ordinary media tracks
  * (flags == 0) keep playing over HDMI unchanged.
+ *
+ * Routing alone is not enough: Fire OS mutes the speaker amplifier whenever
+ * STREAM_MUSIC is on HDMI, so the service also re-sends "speaker_mute=false".
+ * Both levers were verified on the device with real Alexa responses.
  */
 public class RouterService extends Service {
     static final String TAG = "CubeSpeaker";
@@ -31,12 +37,45 @@ public class RouterService extends Service {
 
     private static final int NOTIFICATION_ID = 0x43554245; // "CUBE"
     private static final String CHANNEL_ID = "router";
-    private static final long POLL_MS = 500L;
+    /**
+     * The system re-applies hint 1 on FIRE_TV mode changes and after HDMI
+     * hotplug.  A short poll keeps the window in which a just-started Alexa
+     * track could still be routed to HDMI small.
+     */
+    private static final long POLL_MS = 250L;
     private static final long RETRY_MS = 5000L;
+    /**
+     * Safety net only; normal re-unmute happens on start, on hint changes and
+     * on the HDMI plug broadcast.  The system does not re-mute by itself during
+     * normal playback, but plug events and boot can.
+     */
+    private static final long UNMUTE_MS = 15000L;
 
     private Handler handler;
     private volatile boolean running;
     private int failures;
+    private long lastUnmute;
+
+    private final Runnable unmute = new Runnable() {
+        @Override
+        public void run() {
+            HintUtil.setSpeakerMute(false);
+            lastUnmute = SystemClock.uptimeMillis();
+        }
+    };
+
+    /**
+     * Fire OS applies applySpeakerStatus() around HDMI plug events and may do so
+     * after the broadcast that restarted us.  Unmute immediately and twice more
+     * shortly after, so a late system mute cannot leave the speaker silent.
+     */
+    private void unmuteBurst() {
+        HintUtil.setSpeakerMute(false);
+        lastUnmute = SystemClock.uptimeMillis();
+        handler.removeCallbacks(unmute);
+        handler.postDelayed(unmute, 1500L);
+        handler.postDelayed(unmute, 4000L);
+    }
 
     private final Runnable tick = new Runnable() {
         @Override
@@ -49,7 +88,15 @@ public class RouterService extends Service {
                 failures = 0;
                 if (hint != 0) {
                     HintUtil.set(RouterService.this, 0);
-                    Log.i(TAG, "hint " + hint + " -> 0");
+                    // A hint change means Fire OS may have re-evaluated the
+                    // speaker status and re-muted the amplifier; lift it again.
+                    unmuteBurst();
+                    Log.i(TAG, "hint " + hint + " -> 0; speaker unmuted");
+                }
+                long now = SystemClock.uptimeMillis();
+                if (now - lastUnmute >= UNMUTE_MS) {
+                    HintUtil.setSpeakerMute(false);
+                    lastUnmute = now;
                 }
                 handler.postDelayed(this, POLL_MS);
             } catch (Throwable t) {
@@ -76,6 +123,7 @@ public class RouterService extends Service {
         }
 
         running = true;
+        unmuteBurst();
         handler.post(tick);
         Log.i(TAG, "service started");
     }
@@ -84,18 +132,21 @@ public class RouterService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         if (intent != null && ACTION_STOP.equals(intent.getAction())) {
             getSharedPreferences(PREFS, MODE_PRIVATE).edit()
-                    .putBoolean(KEY_ENABLED, false).apply();
+                    .putBoolean(KEY_ENABLED, false).commit();
             try {
                 HintUtil.set(this, 1);
             } catch (Throwable ignored) {
             }
+            HintUtil.restoreSpeakerMuteIfHdmi();
             stopSelf();
             return START_NOT_STICKY;
         }
-        if (intent != null && !running) {
+        if (!running) {
             running = true;
             handler.post(tick);
         }
+        // Also runs when the service was already alive (e.g. HDMI plug event).
+        unmuteBurst();
         return START_STICKY;
     }
 
@@ -104,6 +155,10 @@ public class RouterService extends Service {
         running = false;
         if (handler != null) {
             handler.removeCallbacksAndMessages(null);
+        }
+        SharedPreferences sp = getSharedPreferences(PREFS, MODE_PRIVATE);
+        if (!sp.getBoolean(KEY_ENABLED, true)) {
+            HintUtil.restoreSpeakerMuteIfHdmi();
         }
         Log.i(TAG, "service destroyed");
         super.onDestroy();

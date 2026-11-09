@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.cubespeaker.router"
-    android:versionCode="1"
-    android:versionName="1.0">
+    android:versionCode="2"
+    android:versionName="1.1">
 
     <uses-sdk android:minSdkVersion="28" android:targetSdkVersion="28" />
 
@@ -21,6 +21,10 @@
         <service
             android:name=".RouterService"
             android:exported="false" />
+
+        <receiver
+            android:name=".DebugReceiver"
+            android:exported="true" />
 
         <receiver
             android:name=".BootReceiver"

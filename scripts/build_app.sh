@@ -8,7 +8,7 @@ JDK="$ROOT/.work/jdk"
 SDK="/tmp/opencode/sdk/android-9"
 BT="/tmp/opencode/bt28/android-9"
 OUT="$ROOT/.work/build"
-KEYSTORE="$ROOT/.work/build/debug.keystore"
+KEYSTORE="$ROOT/.work/debug.keystore"
 
 if [ ! -x "$JDK/bin/javac" ]; then
     echo "JDK not found at $JDK" >&2

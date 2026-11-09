@@ -63,9 +63,24 @@ public class MainActivity extends Activity {
         });
         root.addView(toggle);
 
+        Button test = new Button(this);
+        test.setText("テスト音を鳴らす（Cubeスピーカー）");
+        test.setTextSize(20);
+        test.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Lift the Fire OS amplifier mute first; the service also
+                // re-asserts it, but the button may be pressed right after boot.
+                HintUtil.setSpeakerMute(false);
+                TestTone.play(MainActivity.this);
+            }
+        });
+        root.addView(test);
+
         TextView note = new TextView(this);
         note.setText("※ Alexa由来の音声（応答・音楽）がCube本体スピーカーから出ます。\n"
-                + "通常の動画アプリの音声はTV（HDMI）のままです。");
+                + "通常の動画アプリの音声はTV（HDMI）のままです。\n"
+                + "「テスト音」がCubeから聞こえればスピーカーは動作しています。");
         note.setTextSize(16);
         note.setTextColor(Color.GRAY);
         note.setGravity(Gravity.CENTER);
@@ -88,7 +103,7 @@ public class MainActivity extends Activity {
 
     private void setEnabledState(boolean enabled) {
         SharedPreferences sp = getSharedPreferences(RouterService.PREFS, MODE_PRIVATE);
-        sp.edit().putBoolean(RouterService.KEY_ENABLED, enabled).apply();
+        sp.edit().putBoolean(RouterService.KEY_ENABLED, enabled).commit();
         if (enabled) {
             startForegroundService(new Intent(this, RouterService.class));
         } else {
@@ -97,6 +112,9 @@ public class MainActivity extends Activity {
                 HintUtil.set(this, 1);
             } catch (Throwable ignored) {
             }
+            // Restore the stock mute (TV mode) so the Cube speaker does not
+            // start playing system sounds while the router is disabled.
+            HintUtil.restoreSpeakerMuteIfHdmi();
         }
         updateUi();
     }
@@ -112,7 +130,8 @@ public class MainActivity extends Activity {
             hintText = "取得失敗";
         }
         status.setText((enabled ? "状態: 有効" : "状態: 無効")
-                + "\nHDMI hint = " + hintText);
+                + "\nHDMI hint = " + hintText
+                + "\nスピーカーmute: " + (enabled ? "解除（サービスが維持）" : "通常"));
     }
 
     @Override

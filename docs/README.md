@@ -1,9 +1,9 @@
 # Fire TV Cube (AFTR / raven) — Alexa TTSを本体スピーカーから出す
 
-最終更新: 2026-10-22
+最終更新: 2026-11-08
 対象: Amazon Fire TV Cube (型番 `AFTR`, device `raven`), Fire OS 7.7.1.3 (PS7713/5443), build `PS7713.5443N`, Android 9
 実機: ADB `192.168.55.40`, locale `ja-JP`, region `JP`
-状態: **実装・実機検証済み**（`com.cubespeaker.router` をインストール済み）
+状態: **実機検証済み**（`com.cubespeaker.router` インストール済み）。再起動後も実際の Alexa 応答が Cube 本体スピーカーから聞こえることをユーザーが確認済み。Alexa 応答中だけ TV(HDMI) 音声が一時停止する制約がある（9 章）。
 
 ---
 
@@ -11,9 +11,13 @@
 
 - Alexa の TTS は `AudioAttributes` に **`FLAG_AUTO_OUT` (`0x10000000`)** を付けて再生される。
 - Fire OS の `AmazonAudioManager.setHdmiOutStateHint(0)` を維持すると、`FLAG_AUTO_OUT` のトラックだけが **Cube 本体スピーカー**（output 13 / `AudioOut_D` / `AUDIO_DEVICE_OUT_SPEAKER`）へルーティングされる。
-- 通常の動画・音楽（`flags=0`）は **HDMI**（output 21 / `AudioOut_15` / `0x40000000`）のまま。音量も変化しない。
-- 本リポジトリの `com.cubespeaker.router` が hint 0 を 500 ms ごとに再設定するフォアグラウンドサービス。`BOOT_COMPLETED` で自動起動し、UI で有効/無効を切替できる。
-- 実測: AUTO_OUT ビープ → 本体スピーカー、通常メディアビープ → HDMI。hint を手動で 1 にしても 500 ms 以内に 0 へ復帰。再起動後もサービス自動起動を確認。
+- ただし **ルーティングだけでは無音**。Fire OS は `STREAM_MUSIC` が HDMI にあると `applySpeakerStatus()` で `AudioSystem.setParameters("speaker_mute=true;")` を実行し、本体スピーカーのアンプをミュートする。これが「ルーティングは正しいのに聞こえない」直接の原因だった。
+- 本アプリは hint 0 の維持に加えて **`speaker_mute=false`** を設定する。`AudioSystem.setParameters` は署名権限なしの一般アプリから実行でき、実機で `AudioALSAHardware: +setParameters(): speaker_mute=false` を確認済み。
+- 通常の動画・音楽（`flags=0`）は **HDMI**（`AudioOut_15` / `0x40000000`）のまま。出力 index（21/29/133 など）は構成により変わる。音量も変化しない。
+- 本リポジトリの `com.cubespeaker.router` が hint 0 とアンプmute解除を維持するフォアグラウンドサービス。`BOOT_COMPLETED` で自動起動し、UI で有効/無効を切替できる。
+- 実測: AUTO_OUT ビープ → 本体スピーカー、通常メディアビープ → HDMI。hint を手動で 1 にしても 250 ms 以内に 0 へ復帰。`speaker_mute=false` は再起動後も維持され、実 Alexa 応答も本体スピーカーから再生された（ユーザー可聴確認済み）。
+- **制約**: Alexa 応答の間だけ、TV（HDMI）の音声が約 1〜3 秒止まる。Fire OS の ASP が再生デバイスを `speaker` / `hdmi` のどちらか一方に切り替え、`hdmi_mute=1` を設定するため。root なしで回避できる方法は確認できていない（9 章）。
+- **「全音声を Cube へ」モードは非対応**: `AudioSystem.setForceUse(FOR_MEDIA, FORCE_SPEAKER)` / `AmazonAudioManager.setForceDeviceRouting()` / UID 別ルーティングを実機で試したが、一般アプリでは権限不足または no-op で、HDMI メディアを Cube へ移せなかった（9.2 章）。
 
 ---
 
@@ -121,6 +125,33 @@ TTS output not available
 
 `dual_mode_behavior_config` は `Settings.Global` の int（`0`=manual, `1`=automatic）。手動で ECHO 固定にすれば hint 0 になるが、TV 表示や HDMI 動作にも影響するため採用しなかった。
 
+### スピーカーアンプのミュート（重要）
+
+hint 0 で AUTO_OUT トラックを本体スピーカーへルーティングしても、**音が出ない**。Fire OS の `AmazonAudioServiceShared.applySpeakerStatus()` が次の判定をしている:
+
+```text
+device = getDeviceForStream(STREAM_MUSIC)
+if ((device & 0x2) != 0)          # STREAM_MUSIC が本体スピーカー
+    AudioSettings.setSpeakerStatus(mSpeakerPreference)
+else                              # HDMI など、スピーカー以外
+    AudioSettings.setSpeakerStatus(1)   # 強制ミュート
+```
+
+`AudioSettings.setSpeakerStatus(1)` は `AudioSystem.setParameters("speaker_mute=true;")` を実行し、HAL (`AudioALSAHardware`) が本体スピーカーのアンプをミュートする。逆に status 0 は `speaker_mute=false;`。
+
+FIRE_TV モード（TV オン）では `STREAM_MUSIC` が HDMI にあるため、**`mSpeakerPreference` の値に関係なく必ずミュート**される。このミュートは boot 時 (`initStreamVolumes` / `restoreSpeakerStatus`)、HDMI・有線デバイスの接続変化、Bluetooth A2DP / hearing aid の接続変化、`enableDualOutput()`、`setSpeakerMute()` などで再適用される。
+
+`setSpeakerMute()` は署名権限が必要だが、HAL へ直接 `AudioSystem.setParameters("speaker_mute=false;")` を送る方法は **untrusted_app からでも成功**する（実測）。本アプリはこちらを使う。
+
+実測ログ:
+
+```text
+I AudioALSAHardware: +setParameters(): speaker_mute=false
+I hash_map_utils: key: 'speaker_mute' value: 'false'
+```
+
+`speaker_mute=false` を設定した後、90 秒間 `speaker_mute=true` が再適用されないことも確認した（サービスは 15 秒ごとに安全のため再設定する）。
+
 ### 採用しなかった API
 
 以下は権限不足・未サポート・副作用のため採用していない:
@@ -185,10 +216,12 @@ flags = 0x10000000 (FLAG_AUTO_OUT)
 | ファイル | 役割 |
 |---|---|
 | `app/AndroidManifest.xml` | package `com.cubespeaker.router`, min/target 28, 権限, service/receiver/activity |
-| `app/src/com/cubespeaker/router/HintUtil.java` | `amazon.media.AmazonAudioManager` の反射ラッパー（コンパイル時依存なし） |
-| `app/src/com/cubespeaker/router/RouterService.java` | 500 ms ごとに hint を取得し、0 以外なら 0 に再設定するフォアグラウンドサービス |
+| `app/src/com/cubespeaker/router/HintUtil.java` | `amazon.media.AmazonAudioManager` と `android.media.AudioSystem` の反射ラッパー（hint と `speaker_mute`） |
+| `app/src/com/cubespeaker/router/RouterService.java` | hint 0 の維持と `speaker_mute=false` の再適用を行うフォアグラウンドサービス |
 | `app/src/com/cubespeaker/router/BootReceiver.java` | `BOOT_COMPLETED` / `MY_PACKAGE_REPLACED` / `HDMI_AUDIO_PLUG` でサービス起動 |
-| `app/src/com/cubespeaker/router/MainActivity.java` | 有効/無効トグル、現在の hint 表示（10-foot UI） |
+| `app/src/com/cubespeaker/router/MainActivity.java` | 有効/無効トグル、現在の hint 表示、テスト音ボタン（10-foot UI） |
+| `app/src/com/cubespeaker/router/TestTone.java` | 本体スピーカーへ 3 秒の 1 kHz テスト音を鳴らす（UI からのみ） |
+| `app/src/com/cubespeaker/router/DebugReceiver.java` | ADB 検証用ブロードキャスト（`SET_ENABLED` / `SET_HINT` / `UNMUTE` / `GET_STATE` / `PLAY_TONE` / `SET_PARAMS`） |
 | `scripts/build_app.sh` | ビルド・署名スクリプト |
 
 ### 権限
@@ -204,11 +237,13 @@ flags = 0x10000000 (FLAG_AUTO_OUT)
 ### サービス動作
 
 - 起動時に `startForeground()` で通知を出す（チャンネル `router`, `IMPORTANCE_LOW`）。
-- 500 ms ごとに `getHdmiOutStateHint()` を呼ぶ。
+- 250 ms ごとに `getHdmiOutStateHint()` を呼ぶ。
 - 値が 0 以外なら `setHdmiOutStateHint(0)` を呼び、logcat に `hint 1 -> 0` のように記録。
+- 起動時・`onStartCommand` 時・hint 変更時に `speaker_mute=false` を送る。HDMI 接続イベントとの競合に備え、短い間隔で複数回再送する。
+- 15 秒ごとに `speaker_mute=false` を再送する安全網を持つ。
 - 取得失敗時は 5 秒間隔でリトライ（ログのスパム防止）。
 - `START_STICKY` でシステムによる再起動に備える。
-- 明示的な停止（UI の「無効にする」）時は hint 1 に戻してから停止。
+- 明示的な停止（UI の「無効にする」）時は hint 1 に戻し、`STREAM_MUSIC` が本体スピーカー以外なら `speaker_mute=true` に戻してから停止する（実測: `music devices=0x40000000` → `speaker_mute=true`）。
 
 ### 通知
 
@@ -296,7 +331,7 @@ I/CubeSpeaker: hint 1 -> 0
 getHdmiOutStateHint() = 0
 ```
 
-500 ms 以内にサービスが 0 に戻すことを確認。証拠: `dumps/service_and_boot_evidence.txt`
+250 ms 以内にサービスが 0 に戻すことを確認。証拠: `dumps/service_and_boot_evidence.txt`
 
 ### 8.3 再起動後の自動起動
 
@@ -315,35 +350,120 @@ SmartTube 起動、HOME、通常メディアビープのいずれでも hint は
 
 ### 8.5 実 Alexa 応答について
 
-音声入力の直接トリガー（`TextRequestActivity`, `SpeechToTextService`, wake word, remote の音声キー）は署名権限でブロックされており、実 Alexa 応答を ADB からオンデマンドに発生させることはできなかった。検証は次の 2 点で行っている:
+音声入力の直接トリガー（`TextRequestActivity`, `SpeechToTextService`, wake word, remote の音声キー）は署名権限でブロックされており、実 Alexa 応答を ADB からオンデマンドに発生させることはできない。そのため、実際に Alexa へ話しかけて応答を発生させ、logcat と可聴結果を突き合わせて検証した。
 
-1. vizzini の TTS 属性（usage=1, content=2, flags=AUTO_OUT）と完全一致するビープが、hint 0 で本体スピーカーに出ること。
-2. 導入前から記録されている毎日 09:00 の TTS トラックが `AudioOut_D` に出ていること。
+実 Alexa TTS 再生中の logcat（抜粋、`/tmp/opencode/tts_speaker.log`）:
+
+```text
+Audio Speaker track active 1
+setActivePlaybackDevice: speaker
+hdmi_mute=1
+...
+setActivePlaybackDevice: hdmi
+hdmi_mute=0
+```
+
+- TTS トラックが `AudioOut_D`（本体スピーカー）に出ている。
+- 同時に `hdmi_mute=1` になり、TV（HDMI）側は一時停止する。
+- 再生終了で `hdmi_mute=0` に戻り、HDMI 音声が復帰する。
+- **ユーザーが実機で可聴確認済み**。再起動後も、手動の per-UID 操作なしで Alexa 応答が Cube 本体スピーカーから聞こえることを確認した。
+
+### 8.6 アンプmute解除（`speaker_mute=false`）
+
+アプリ（UID `u0a262`）起動時の logcat:
+
+```text
+I CubeSpeaker: service started
+I AudioALSAHardware: +setParameters(): speaker_mute=false
+I hash_map_utils: key: 'speaker_mute' value: 'false'
+```
+
+起動直後に 1.5 秒後・4 秒後の再送も確認:
+
+```text
+16:25:10.548 AudioALSAHardware: +setParameters(): speaker_mute=false
+16:25:12.050 AudioALSAHardware: +setParameters(): speaker_mute=false
+16:25:14.550 AudioALSAHardware: +setParameters(): speaker_mute=false
+```
+
+hint は `AudioProbe` で 0 を確認:
+
+```text
+getHdmiOutStateHint() = 0
+```
+
+**持続性テスト**: `logcat -c` → `speaker_mute=false` → 90 秒待機 → `speaker_mute=true` の出現を確認 → **0 件**。15 秒ごとの安全網による `false` 再送のみ。システムが独断で再ミュートすることはない。
+
+**無効化テスト**: UI で「無効にする」→
+
+```text
+I CubeSpeaker: speaker_mute restored (music devices=0x40000000)
+I AudioALSAHardware: +setParameters(): speaker_mute=true
+I CubeSpeaker: service destroyed
+getHdmiOutStateHint() = 1
+```
+
+再度「有効にする」→ `service started` / `hint 1 -> 0` / `speaker_mute=false` / hint 0 に復帰。
+
+### 8.7 テスト音
+
+UI の「テスト音を鳴らす（Cubeスピーカー）」ボタンで、`AudioAttributes` = `USAGE_ASSISTANCE_SONIFICATION`、`setPreferredDevice(TYPE_BUILTIN_SPEAKER)` の 3 秒トーンを再生:
+
+```text
+I CubeSpeaker: test tone preferred speaker=6 ok=true
+I CubeSpeaker: test tone done
+```
+
+同時刻の `dumpsys media.audio_flinger`:
+
+```text
+Output thread ... name AudioOut_D ... type 0 (MIXER)
+  Output device: 0x2 (AUDIO_DEVICE_OUT_SPEAKER)
+```
+
+ルーティングとアンプmute解除は確認済み。**ユーザーが実機でテスト音を聞き、Cube 本体スピーカーから鳴ることを確認済み**。Alexa 応答の可聴確認は 8.5 を参照。
 
 ---
 
 ## 9. トレードオフと注意
 
-### Alexa 経由の音楽も本体スピーカーになる
+### 9.1 Alexa 経由の音楽も本体スピーカーになる
 
 `FLAG_AUTO_OUT` は TTS だけでなく、Alexa 経由の音楽（`com.amazon.alexamediaplayer.runtime.ftv`）にも付く。このため、Alexa に「音楽をかけて」と頼んだ場合も Cube 本体スピーカーから再生される。
 
 - 単体の Amazon Music アプリ（`com.amazon.bueller.music`）は `FLAG_AUTO_OUT` を使っておらず、UI から再生する場合は HDMI のまま。
 - TV のスピーカーで Alexa 音楽を聴きたい場合は、本アプリを一時的に「無効」にする（hint 1 に戻る）。
 
-### 通知
+### 9.2 「全音声を Cube へ」モードが実装できない理由
+
+「Alexa だけでなく、HDMI の動画・音楽も含めて全て Cube 本体スピーカーから出す」モードは、**root なしの一般アプリでは実装できない**。実機で以下をすべて試し、いずれも効果がなかった（または権限で拒否された）。
+
+| 試した方法 | 結果 |
+|---|---|
+| `AudioSystem.setForceUse(FOR_MEDIA, FORCE_SPEAKER)` | 戻り値 1。しかし `dumpsys media.audio_policy` の `Force use for media` は 12 のまま変化しない |
+| `AmazonAudioManager.setForceDeviceRouting(2)` | `setForceDeviceRouting is not supported on this platform!`（`isPlatformFireTvSmart()` が false） |
+| `AudioSystem.setAudioRoutingForUid(uid, 1)`（transaction 52） | 戻り値 0 だが、その UID のメディアは HDMI のまま |
+| `AudioSystem.setForceUse` の全 usage × config スイープ | media は 12 のまま。変更できたのは無関係な encoded surround のみ |
+| HAL パラメータ（`routing=2`, `output_device=2`, `speaker=1`, `hdmi_mute=1;speaker_mute=false` など） | すべて `startOutput() output 133`（HDMI）のまま |
+| `AmazonAudioService.enableDualOutput()`（HDMI + スピーカー同時出力） | 署名権限 `com.amazon.permission.FORCE_SIMULTANEOUS_AUDIO_OUTPUT` が必要で実行不可 |
+
+この端末の HDMI メディア出力は AudioPolicyManager が `FORCE_HDMI_SYSTEM_AUDIO_ENFORCED` (12) で固定しており、一般アプリから変更するレバーが存在しない。`FORCE_SPEAKER` を設定しても APM が無視する。一方、Alexa の TTS は `FLAG_AUTO_OUT` によって別経路で本体スピーカーへ送られるため、9.1 の範囲だけが実現できる。
+
+そのため、動作しない「全音声」モードはアプリに残さず、**Alexa のみ → Cube / 通常メディア → HDMI** の 1 モードに絞っている。全音声を Cube から出すには root 化、またはシステム署名された特権アプリが必要。
+
+### 9.3 通知
 
 フォアグラウンドサービスの常時通知が出る。`IMPORTANCE_LOW` のため音は鳴らない。
 
-### モード変更直後の短いウィンドウ
+### 9.4 モード変更直後の短いウィンドウ
 
-システムが `FIRE_TV` モードへの変更で hint 1 を設定してから、サービスが 0 に戻すまで最大 500 ms のウィンドウがある。TTS の開始までに通常は間に合うが、直後に発話した場合だけは HDMI に出る可能性がゼロではない。気になる場合は `POLL_MS` を 250 ms に短縮できる（`RouterService.java`）。
+システムが `FIRE_TV` モードへの変更で hint 1 を設定してから、サービスが 0 に戻すまで最大 250 ms のウィンドウがある。TTS の開始までに通常は間に合うが、直後に発話した場合だけは HDMI に出る可能性がゼロではない。
 
-### 強制停止された場合
+### 9.5 強制停止された場合
 
 Fire OS がアプリを強制停止した場合、次回のモード変更で hint 1 に戻る可能性がある。アプリを起動し直すか、再起動すればサービスが再開する。foreground service + `START_STICKY` で通常は停止しない。
 
-### OS アップデート
+### 9.6 OS アップデート
 
 Fire OS のアップデートで `AmazonAudioManager` の実装や hint の意味が変わる可能性がある。アップデート後は `dumpsys media.audio_flinger` で再確認する。
 
@@ -377,18 +497,34 @@ $ADB shell rm -f /data/local/tmp/helper.dex
 ```bash
 ADB=/tmp/opencode/pt/platform-tools/adb
 
-# 現在の hint を読む（検証用 Probe アプリの UID で実行）
-$ADB shell "run-as com.probe.untrusted sh -c 'CLASSPATH=/data/local/tmp/helper.dex app_process /system/bin AudioProbe'" | grep Hint
+# アプリの状態（hint / speaker_mute / enabled）
+$ADB logcat -c
+$ADB shell am broadcast -n com.cubespeaker.router/.DebugReceiver \
+  -a com.cubespeaker.router.GET_STATE
+$ADB logcat -d -s CubeSpeaker:* | tail -3
+# => debug state enabled=true hint=0 forceUseMedia=12 speakerMute=false
 
-# hint を 0/1 に設定
-$ADB shell "run-as com.probe.untrusted sh -c 'CLASSPATH=/data/local/tmp/helper.dex app_process /system/bin AudioProbe setHdmiOutStateHint=0'"
-$ADB shell "run-as com.probe.untrusted sh -c 'CLASSPATH=/data/local/tmp/helper.dex app_process /system/bin AudioProbe setHdmiOutStateHint=1'"
+# 有効化 / 無効化
+$ADB shell am broadcast -n com.cubespeaker.router/.DebugReceiver \
+  -a com.cubespeaker.router.SET_ENABLED --ei enabled 1
+$ADB shell am broadcast -n com.cubespeaker.router/.DebugReceiver \
+  -a com.cubespeaker.router.SET_ENABLED --ei enabled 0
 
-# AUTO_OUT ビープ（vizzini TTS と同じ属性）
-$ADB shell "CLASSPATH=/data/local/tmp/helper.dex app_process /system/bin Beep2 2 1 268435456 4 700"
+# hint を手動で 0/1 に設定（サービスが 250 ms 以内に 0 へ戻す）
+$ADB shell am broadcast -n com.cubespeaker.router/.DebugReceiver \
+  -a com.cubespeaker.router.SET_HINT --ei value 1
 
-# 通常メディアビープ
-$ADB shell "CLASSPATH=/data/local/tmp/helper.dex app_process /system/bin Beep2 2 1 0 4 700"
+# アンプmute解除を即時再送
+$ADB shell am broadcast -n com.cubespeaker.router/.DebugReceiver \
+  -a com.cubespeaker.router.UNMUTE
+
+# テスト音（Cube スピーカー）
+$ADB shell am broadcast -n com.cubespeaker.router/.DebugReceiver \
+  -a com.cubespeaker.router.PLAY_TONE
+
+# HAL パラメータ送信（診断用）
+$ADB shell am broadcast -n com.cubespeaker.router/.DebugReceiver \
+  -a com.cubespeaker.router.SET_PARAMS --es value 'speaker_mute=false'
 
 # ルーティング確認
 $ADB shell dumpsys media.audio_flinger | grep -E 'AudioOut_|Output device'
@@ -400,7 +536,7 @@ $ADB shell dumpsys activity services com.cubespeaker.router
 $ADB logcat -s CubeSpeaker
 ```
 
-検証用ヘルパーのソースは `tools/` に置いてある（`tools/README.md` 参照）。
+検証用ヘルパー（`AudioProbe` / `Beep2`）のソースは `tools/` に置いてある（`tools/README.md` 参照）。アプリの `DebugReceiver` だけで hint・mute・状態確認は完結するため、通常はヘルパーは不要。
 
 > 実機検証後、検証用の `com.probe.untrusted` と `/data/local/tmp/helper.dex` は削除済み。再検証する場合は `tools/README.md` の手順で再構築する。最終アプリ `com.cubespeaker.router` は残している。
 
@@ -410,7 +546,7 @@ $ADB logcat -s CubeSpeaker
 
 | パス | 内容 |
 |---|---|
-| `app/` | 最終アプリのソース |
+| `app/` | 最終アプリのソース（`HintUtil`, `RouterService`, `MainActivity`, `TestTone`, `DebugReceiver`, `BootReceiver`） |
 | `scripts/build_app.sh` | ビルド・署名スクリプト |
 | `docs/README.md` | 本ドキュメント |
 | `dumps/audio_policy_dump.txt` | APM の初期ダンプ |

@@ -30,12 +30,16 @@ adb shell am start -n com.cubespeaker.router/.MainActivity
 
 - Alexa TTS は `FLAG_AUTO_OUT` (`0x10000000`) 付きの `AudioAttributes` で再生される。
 - `AmazonAudioManager.setHdmiOutStateHint(0)` を維持すると、AUTO_OUT のトラックだけが本体スピーカー（output 13 / `AudioOut_D`）へ行く。
-- 通常の動画・音楽（`flags=0`）は HDMI（output 21 / `AudioOut_15`）のまま。
+- 通常の動画・音楽（`flags=0`）は HDMI（`AudioOut_15`）のまま。
+- 実 Alexa 応答が Cube 本体スピーカーから聞こえることを実機で確認済み（再起動後も自動）。Alexa 応答中だけ TV 音声が約 1〜3 秒止まる。
+- **HDMI を含む全音声を Cube から出すモードは非対応**。一般アプリから `setForceUse` / UID ルーティング / dual output を試したが、Fire OS が HDMI 固定を解除しない（詳細は `docs/README.md` 9.2）。
 
 詳細・実測マトリクス・トレードオフは [`docs/README.md`](docs/README.md) を参照。
 
 ## 注意
 
 - 本リポジトリは root なし・システムアプリなしで動作する一般アプリの実装です。
+- Alexa の音量は Cube 本体のボリュームボタンで調整できます（TV の音量とは独立）。
 - Alexa 経由の音楽も AUTO_OUT のため本体スピーカーから出ます（TV で聴きたいときはアプリを一時的に無効化）。
+- HDMI を含む全音声を Cube から出すには root 化またはシステム署名アプリが必要です。
 - `.work/` と `*.apk` は `.gitignore` 対象です。

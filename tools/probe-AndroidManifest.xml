@@ -5,5 +5,6 @@
     android:versionName="1.0">
     <uses-sdk android:minSdkVersion="28" android:targetSdkVersion="28" />
     <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <application android:debuggable="true" android:label="Probe" />
 </manifest>
