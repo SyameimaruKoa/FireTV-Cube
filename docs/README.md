@@ -1,9 +1,9 @@
 # Fire TV Cube (AFTR / raven) — Alexa TTSを本体スピーカーから出す
 
-最終更新: 2026-11-08
+最終更新: 2026-11-10
 対象: Amazon Fire TV Cube (型番 `AFTR`, device `raven`), Fire OS 7.7.1.3 (PS7713/5443), build `PS7713.5443N`, Android 9
 実機: ADB `192.168.55.40`, locale `ja-JP`, region `JP`
-状態: **実機検証済み**（`com.cubespeaker.router` インストール済み）。再起動後も実際の Alexa 応答が Cube 本体スピーカーから聞こえることをユーザーが確認済み。Alexa 応答中だけ TV(HDMI) 音声が一時停止する制約がある（9 章）。
+状態: **実機検証済み**（`com.cubespeaker.router` v1.2 インストール済み）。再起動後も実際の Alexa 応答が Cube 本体スピーカーから聞こえることをユーザーが確認済み。Alexa 応答中だけ TV(HDMI) 音声が一時停止する制約がある（9 章）。任意の「全音声を Cube へ」モードも実装し、ユーザーが実音で確認済み。
 
 ---
 
@@ -17,7 +17,7 @@
 - 本リポジトリの `com.cubespeaker.router` が hint 0 とアンプmute解除を維持するフォアグラウンドサービス。`BOOT_COMPLETED` で自動起動し、UI で有効/無効を切替できる。
 - 実測: AUTO_OUT ビープ → 本体スピーカー、通常メディアビープ → HDMI。hint を手動で 1 にしても 250 ms 以内に 0 へ復帰。`speaker_mute=false` は再起動後も維持され、実 Alexa 応答も本体スピーカーから再生された（ユーザー可聴確認済み）。
 - **制約**: Alexa 応答の間だけ、TV（HDMI）の音声が約 1〜3 秒止まる。Fire OS の ASP が再生デバイスを `speaker` / `hdmi` のどちらか一方に切り替え、`hdmi_mute=1` を設定するため。root なしで回避できる方法は確認できていない（9 章）。
-- **「全音声を Cube へ」モードは非対応**: `AudioSystem.setForceUse(FOR_MEDIA, FORCE_SPEAKER)` / `AmazonAudioManager.setForceDeviceRouting()` / UID 別ルーティングを実機で試したが、一般アプリでは権限不足または no-op で、HDMI メディアを Cube へ移せなかった（9.2 章）。
+- **「全音声を Cube へ」モード（任意・v1.2 で追加）**: 本体スピーカーに**無音の `AudioTrack`** を 1 本だけ維持すると、APM が `Audio Speaker track active 1` → `hdmi_mute=1` とし、通常メディア（`flags=0`）まで output 13 / `AudioOut_D` へ回す。この性質を使い、UI のチェックボックスで「TV を含む全音声を Cube から」に切り替えられる。TV は映像のみ（無音）になる。ユーザーが実音で確認済み（9.2 章）。
 
 ---
 
@@ -203,9 +203,11 @@ flags = 0x10000000 (FLAG_AUTO_OUT)
 | 0 | 2 (MUSIC) | 1 (MEDIA) | `0` | HDMI (`AudioOut_15`, `0x40000000`) |
 | 1 | 2 (MUSIC) | 1 (MEDIA) | `0x10000000` | HDMI |
 | 0 | 2 (MUSIC) | 13 (ASSISTANCE_SONIFICATION) | `0x10000000` | **Speaker** |
+| 0 + 無音 keepalive | 2 (MUSIC) | 1 (MEDIA) | `0` | **Speaker** (`AudioOut_D`) |
+| 0 + 無音 keepalive | 2 (MUSIC) | 1 (MEDIA) | `0x10000000` | **Speaker** |
 | 任意 | — | legacy `STREAM_TTS=9` | — | HDMI（vizzini は使わない） |
 
-このように、**hint 0 は AUTO_OUT トラックにだけ効く**。通常のメディア（flags 0）は HDMI のままで、音量も -1.4 dB のまま変化しない。
+このように、**hint 0 は AUTO_OUT トラックにだけ効く**。通常のメディア（flags 0）は HDMI のままで、音量も -1.4 dB のまま変化しない。ただし本体スピーカーに無音トラックを 1 本維持した場合だけは、APM がメディア全体をスピーカーへ寄せる（v1.2 の全音声モード）。
 
 ---
 
@@ -217,11 +219,12 @@ flags = 0x10000000 (FLAG_AUTO_OUT)
 |---|---|
 | `app/AndroidManifest.xml` | package `com.cubespeaker.router`, min/target 28, 権限, service/receiver/activity |
 | `app/src/com/cubespeaker/router/HintUtil.java` | `amazon.media.AmazonAudioManager` と `android.media.AudioSystem` の反射ラッパー（hint と `speaker_mute`） |
-| `app/src/com/cubespeaker/router/RouterService.java` | hint 0 の維持と `speaker_mute=false` の再適用を行うフォアグラウンドサービス |
+| `app/src/com/cubespeaker/router/RouterService.java` | hint 0 の維持と `speaker_mute=false` の再適用を行うフォアグラウンドサービス。全音声モードの keepalive も管理 |
+| `app/src/com/cubespeaker/router/SpeakerKeepAlive.java` | 全音声モード用の無音 `AudioTrack` を本体スピーカーに維持する |
 | `app/src/com/cubespeaker/router/BootReceiver.java` | `BOOT_COMPLETED` / `MY_PACKAGE_REPLACED` / `HDMI_AUDIO_PLUG` でサービス起動 |
-| `app/src/com/cubespeaker/router/MainActivity.java` | 有効/無効トグル、現在の hint 表示、テスト音ボタン（10-foot UI） |
-| `app/src/com/cubespeaker/router/TestTone.java` | 本体スピーカーへ 3 秒の 1 kHz テスト音を鳴らす（UI からのみ） |
-| `app/src/com/cubespeaker/router/DebugReceiver.java` | ADB 検証用ブロードキャスト（`SET_ENABLED` / `SET_HINT` / `UNMUTE` / `GET_STATE` / `PLAY_TONE` / `SET_PARAMS`） |
+| `app/src/com/cubespeaker/router/MainActivity.java` | 有効/無効トグル、全音声モードのチェックボックス、hint 表示、テスト音ボタン（10-foot UI） |
+| `app/src/com/cubespeaker/router/TestTone.java` | 本体スピーカーへ 8 秒の 1 kHz テスト音を鳴らす（UI からのみ） |
+| `app/src/com/cubespeaker/router/DebugReceiver.java` | ADB 検証用ブロードキャスト（`SET_ENABLED` / `SET_ALL_AUDIO` / `SET_HINT` / `UNMUTE` / `GET_STATE` / `PLAY_TONE` / `SET_PARAMS`） |
 | `scripts/build_app.sh` | ビルド・署名スクリプト |
 
 ### 権限
@@ -241,6 +244,7 @@ flags = 0x10000000 (FLAG_AUTO_OUT)
 - 値が 0 以外なら `setHdmiOutStateHint(0)` を呼び、logcat に `hint 1 -> 0` のように記録。
 - 起動時・`onStartCommand` 時・hint 変更時に `speaker_mute=false` を送る。HDMI 接続イベントとの競合に備え、短い間隔で複数回再送する。
 - 15 秒ごとに `speaker_mute=false` を再送する安全網を持つ。
+- 全音声モードがオンのときは、`USAGE_MEDIA` / 無音（PCM 16-bit, 48 kHz, mono）の `AudioTrack` を 1 本生成し、`setPreferredDevice(TYPE_BUILTIN_SPEAKER)` して流し続ける。オフにすると即座に停止・解放する。オーディオフォーカスは要求しないため、再生中のアプリを止めたり duck したりしない。
 - 取得失敗時は 5 秒間隔でリトライ（ログのスパム防止）。
 - `START_STICKY` でシステムによる再起動に備える。
 - 明示的な停止（UI の「無効にする」）時は hint 1 に戻し、`STREAM_MUSIC` が本体スピーカー以外なら `speaker_mute=true` に戻してから停止する（実測: `music devices=0x40000000` → `speaker_mute=true`）。
@@ -407,7 +411,7 @@ getHdmiOutStateHint() = 1
 
 ### 8.7 テスト音
 
-UI の「テスト音を鳴らす（Cubeスピーカー）」ボタンで、`AudioAttributes` = `USAGE_ASSISTANCE_SONIFICATION`、`setPreferredDevice(TYPE_BUILTIN_SPEAKER)` の 3 秒トーンを再生:
+UI の「テスト音を鳴らす（Cubeスピーカー）」ボタンで、`AudioAttributes` = `USAGE_ASSISTANCE_SONIFICATION`、`setPreferredDevice(TYPE_BUILTIN_SPEAKER)` の 8 秒トーンを再生:
 
 ```text
 I CubeSpeaker: test tone preferred speaker=6 ok=true
@@ -423,6 +427,41 @@ Output thread ... name AudioOut_D ... type 0 (MIXER)
 
 ルーティングとアンプmute解除は確認済み。**ユーザーが実機でテスト音を聞き、Cube 本体スピーカーから鳴ることを確認済み**。Alexa 応答の可聴確認は 8.5 を参照。
 
+### 8.8 全音声モード（v1.2）
+
+UI の「テレビを含むすべての音声をCubeから出す」をオンにすると、`SpeakerKeepAlive` が無音トラックを開始する。`AudioTrack` の属性は `USAGE_MEDIA` / `CONTENT_TYPE_MUSIC`、48 kHz・mono・PCM 16-bit、`setPreferredDevice(TYPE_BUILTIN_SPEAKER)`。ゼロサンプルを書き続けるだけで音は出さない。
+
+有効化直後の logcat（アプリ UID `10262`）:
+
+```text
+I CubeSpeaker: keepalive active preferred=true speaker=6 session=1825
+I APM_AudioPolicyManager: getOutputForAttr() returns output 13 selectedDeviceId 6
+I APM_AudioPolicyManager: startOutput() output 13, stream 3, session 1825, caller pid: 6723, uid: 10262
+I APM::AudioPolicyEngine_fosExt: Audio Speaker track active 1
+I AudioALSAHardware: +setParameters(): hdmi_mute=1
+I ASP/ER: setActivePlaybackDevice: speaker
+```
+
+この状態で、`flags=0`（通常メディア）の 440 Hz ビープを別プロセス（shell, UID 2000）から再生したところ:
+
+```text
+I APM_AudioPolicyManager: startOutput() output 13, stream 3, session 1873, caller pid: 6519, uid: 2000
+```
+
+`dumpsys media.audio_flinger` の `AudioOut_D`（`Output device: 0x2 AUDIO_DEVICE_OUT_SPEAKER`）には、keepalive のセッション 1865 とビープのセッション 1873 が同時に active で並んだ。**ユーザーが実機でビープが Cube 本体から鳴ることを確認済み**（TV は `hdmi_mute=1` で無音）。
+
+オフにすると:
+
+```text
+I CubeSpeaker: keepalive loop finished
+I CubeSpeaker: keepalive stopped
+I APM::AudioPolicyEngine_fosExt: Audio Speaker track active 0
+I AudioALSAHardware: +setParameters(): hdmi_mute=0
+I APM_AudioPolicyManager: stopOutput() output 13, stream 3, session 1825, ...
+```
+
+その後、通常メディアは再び HDMI（`AudioOut_15` / output 21 系）へ戻ることを確認した。
+
 ---
 
 ## 9. トレードオフと注意
@@ -434,9 +473,20 @@ Output thread ... name AudioOut_D ... type 0 (MIXER)
 - 単体の Amazon Music アプリ（`com.amazon.bueller.music`）は `FLAG_AUTO_OUT` を使っておらず、UI から再生する場合は HDMI のまま。
 - TV のスピーカーで Alexa 音楽を聴きたい場合は、本アプリを一時的に「無効」にする（hint 1 に戻る）。
 
-### 9.2 「全音声を Cube へ」モードが実装できない理由
+### 9.2 「全音声を Cube へ」モード（v1.2・任意）
 
-「Alexa だけでなく、HDMI の動画・音楽も含めて全て Cube 本体スピーカーから出す」モードは、**root なしの一般アプリでは実装できない**。実機で以下をすべて試し、いずれも効果がなかった（または権限で拒否された）。
+Alexa だけでなく、HDMI の動画・音楽も含めて全て Cube 本体スピーカーから出すモードを v1.2 で追加した。UI の「テレビを含むすべての音声をCubeから出す」で切り替える（既定はオフ）。
+
+**仕組み**: 本体スピーカーを preferred device にした**無音の `AudioTrack`**（`USAGE_MEDIA`, 48 kHz mono, ゼロサンプル）を 1 本だけ維持する。Fire OS の APM はこれを `Audio Speaker track active 1` と認識し、`hdmi_mute=1` と `setActivePlaybackDevice: speaker` を実行する。その結果、同じメディア strategy に属する通常の `STREAM_MUSIC`（`flags=0`）も output 13 / `AudioOut_D` へ回る。無音トラック自体は音を出さないので、実際に鳴っているメディアだけが Cube から聞こえる。
+
+**制約**:
+
+- モード中は TV が `hdmi_mute=1` で**無音**になる（映像はそのまま）。TV のスピーカーと Cube の同時出力ではない。
+- 全メディアが Cube の 1 本のミキサーに集約されるため、音量は Cube 本体のボリュームで調整する。
+- 無音トラックはオーディオフォーカスを要求しない。再生中のアプリを止めたり duck したりはしない。
+- アプリを無効化するかモードをオフにすると、トラック停止 → `Audio Speaker track active 0` → `hdmi_mute=0` となり、通常メディアは HDMI に戻る（8.8 で実測）。
+
+**以前試して効果がなかった方法**（記録として）:
 
 | 試した方法 | 結果 |
 |---|---|
@@ -447,9 +497,9 @@ Output thread ... name AudioOut_D ... type 0 (MIXER)
 | HAL パラメータ（`routing=2`, `output_device=2`, `speaker=1`, `hdmi_mute=1;speaker_mute=false` など） | すべて `startOutput() output 133`（HDMI）のまま |
 | `AmazonAudioService.enableDualOutput()`（HDMI + スピーカー同時出力） | 署名権限 `com.amazon.permission.FORCE_SIMULTANEOUS_AUDIO_OUTPUT` が必要で実行不可 |
 
-この端末の HDMI メディア出力は AudioPolicyManager が `FORCE_HDMI_SYSTEM_AUDIO_ENFORCED` (12) で固定しており、一般アプリから変更するレバーが存在しない。`FORCE_SPEAKER` を設定しても APM が無視する。一方、Alexa の TTS は `FLAG_AUTO_OUT` によって別経路で本体スピーカーへ送られるため、9.1 の範囲だけが実現できる。
+この端末の HDMI メディア出力は APM が `FORCE_HDMI_SYSTEM_AUDIO_ENFORCED` (12) で固定しており、一般アプリから force-use を変更するレバーは存在しない。しかし「本体スピーカーで active なトラックが存在する」という別の条件が APM の再評価を引き起こし、メディア strategy 全体をスピーカーへ移す。force-use を書き換えるのではなく、APM の判定材料を満たすアプローチである。
 
-そのため、動作しない「全音声」モードはアプリに残さず、**Alexa のみ → Cube / 通常メディア → HDMI** の 1 モードに絞っている。全音声を Cube から出すには root 化、またはシステム署名された特権アプリが必要。
+なお、同時出力（TV と Cube の両方から）は引き続き非対応。HDMI を含む全音声を Cube から出すには、本モード（TV は無音）を使う。
 
 ### 9.3 通知
 
@@ -502,7 +552,13 @@ $ADB logcat -c
 $ADB shell am broadcast -n com.cubespeaker.router/.DebugReceiver \
   -a com.cubespeaker.router.GET_STATE
 $ADB logcat -d -s CubeSpeaker:* | tail -3
-# => debug state enabled=true hint=0 forceUseMedia=12 speakerMute=false
+# => debug state enabled=true allAudio=false hint=0 forceUseMedia=12 speakerMute=false
+
+# 全音声モード（TVを含むすべてをCubeから。TVは無音）
+$ADB shell am broadcast -n com.cubespeaker.router/.DebugReceiver \
+  -a com.cubespeaker.router.SET_ALL_AUDIO --ei enabled 1
+$ADB shell am broadcast -n com.cubespeaker.router/.DebugReceiver \
+  -a com.cubespeaker.router.SET_ALL_AUDIO --ei enabled 0
 
 # 有効化 / 無効化
 $ADB shell am broadcast -n com.cubespeaker.router/.DebugReceiver \
@@ -546,7 +602,7 @@ $ADB logcat -s CubeSpeaker
 
 | パス | 内容 |
 |---|---|
-| `app/` | 最終アプリのソース（`HintUtil`, `RouterService`, `MainActivity`, `TestTone`, `DebugReceiver`, `BootReceiver`） |
+| `app/` | 最終アプリのソース（`HintUtil`, `RouterService`, `SpeakerKeepAlive`, `MainActivity`, `TestTone`, `DebugReceiver`, `BootReceiver`） |
 | `scripts/build_app.sh` | ビルド・署名スクリプト |
 | `docs/README.md` | 本ドキュメント |
 | `dumps/audio_policy_dump.txt` | APM の初期ダンプ |

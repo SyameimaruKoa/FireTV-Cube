@@ -32,8 +32,15 @@ public class RouterService extends Service {
 
     static final String PREFS = "router";
     static final String KEY_ENABLED = "enabled";
+    /**
+     * Optional "everything from the Cube" mode.  When set, a silent speaker
+     * track is kept alive so Fire OS reroutes ordinary media to the Cube too.
+     */
+    static final String KEY_ALL_AUDIO = "all_audio";
 
     static final String ACTION_STOP = "com.cubespeaker.router.STOP";
+    /** Re-read preferences (sent by the UI and the debug receiver). */
+    static final String ACTION_RELOAD = "com.cubespeaker.router.RELOAD";
 
     private static final int NOTIFICATION_ID = 0x43554245; // "CUBE"
     private static final String CHANNEL_ID = "router";
@@ -55,6 +62,7 @@ public class RouterService extends Service {
     private volatile boolean running;
     private int failures;
     private long lastUnmute;
+    private final SpeakerKeepAlive keepAlive = new SpeakerKeepAlive();
 
     private final Runnable unmute = new Runnable() {
         @Override
@@ -124,6 +132,7 @@ public class RouterService extends Service {
 
         running = true;
         unmuteBurst();
+        syncAllAudio();
         handler.post(tick);
         Log.i(TAG, "service started");
     }
@@ -133,6 +142,9 @@ public class RouterService extends Service {
         if (intent != null && ACTION_STOP.equals(intent.getAction())) {
             getSharedPreferences(PREFS, MODE_PRIVATE).edit()
                     .putBoolean(KEY_ENABLED, false).commit();
+            // Stop the silent speaker track first; only then does STREAM_MUSIC
+            // return to HDMI, which is what restoreSpeakerMuteIfHdmi checks.
+            keepAlive.stop();
             try {
                 HintUtil.set(this, 1);
             } catch (Throwable ignored) {
@@ -147,12 +159,30 @@ public class RouterService extends Service {
         }
         // Also runs when the service was already alive (e.g. HDMI plug event).
         unmuteBurst();
+        syncAllAudio();
         return START_STICKY;
+    }
+
+    /**
+     * Starts or stops the silent speaker track that makes Fire OS route all
+     * media to the built-in speaker.  Safe to call repeatedly.
+     */
+    private void syncAllAudio() {
+        boolean wanted = getSharedPreferences(PREFS, MODE_PRIVATE)
+                .getBoolean(KEY_ALL_AUDIO, false);
+        if (wanted && !keepAlive.isRunning()) {
+            keepAlive.start(this);
+            updateNotification();
+        } else if (!wanted && keepAlive.isRunning()) {
+            keepAlive.stop();
+            updateNotification();
+        }
     }
 
     @Override
     public void onDestroy() {
         running = false;
+        keepAlive.stop();
         if (handler != null) {
             handler.removeCallbacksAndMessages(null);
         }
@@ -185,6 +215,9 @@ public class RouterService extends Service {
         PendingIntent pending = PendingIntent.getActivity(
                 this, 0, open, PendingIntent.FLAG_UPDATE_CURRENT);
 
+        boolean allAudio = getSharedPreferences(PREFS, MODE_PRIVATE)
+                .getBoolean(KEY_ALL_AUDIO, false);
+
         Notification.Builder builder;
         if (Build.VERSION.SDK_INT >= 26) {
             builder = new Notification.Builder(this, CHANNEL_ID);
@@ -193,10 +226,21 @@ public class RouterService extends Service {
         }
         return builder
                 .setContentTitle("Alexa音声 → Cubeスピーカー")
-                .setContentText("自動ルーティング有効")
+                .setContentText(allAudio
+                        ? "全音声 → Cube（TVは無音）"
+                        : "Alexaのみ → Cube（通常メディアはHDMI）")
                 .setSmallIcon(android.R.drawable.ic_btn_speak_now)
                 .setContentIntent(pending)
                 .setOngoing(true)
                 .build();
+    }
+
+    private void updateNotification() {
+        try {
+            NotificationManager nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+            nm.notify(NOTIFICATION_ID, buildNotification());
+        } catch (Throwable t) {
+            Log.w(TAG, "notification update failed", t);
+        }
     }
 }

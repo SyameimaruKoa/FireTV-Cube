@@ -19,6 +19,7 @@ public class DebugReceiver extends BroadcastReceiver {
 
     private static final String ACTION_SET_HINT = "com.cubespeaker.router.SET_HINT";
     private static final String ACTION_SET_ENABLED = "com.cubespeaker.router.SET_ENABLED";
+    private static final String ACTION_SET_ALL_AUDIO = "com.cubespeaker.router.SET_ALL_AUDIO";
     private static final String ACTION_GET_STATE = "com.cubespeaker.router.GET_STATE";
     private static final String ACTION_PLAY_TONE = "com.cubespeaker.router.PLAY_TONE";
     private static final String ACTION_SET_PARAMS = "com.cubespeaker.router.SET_PARAMS";
@@ -55,10 +56,26 @@ public class DebugReceiver extends BroadcastReceiver {
                 boolean enabled = context.getSharedPreferences(
                         RouterService.PREFS, Context.MODE_PRIVATE)
                         .getBoolean(RouterService.KEY_ENABLED, true);
+                boolean allAudio = context.getSharedPreferences(
+                        RouterService.PREFS, Context.MODE_PRIVATE)
+                        .getBoolean(RouterService.KEY_ALL_AUDIO, false);
                 Log.i(TAG, "debug state enabled=" + enabled
+                        + " allAudio=" + allAudio
                         + " hint=" + HintUtil.get(context)
                         + " forceUseMedia=" + HintUtil.getForceUse(1)
                         + " speakerMute=" + HintUtil.isSpeakerMute(context));
+            } else if (ACTION_SET_ALL_AUDIO.equals(action)) {
+                boolean allAudio = intent.getIntExtra("enabled", 1) != 0;
+                context.getSharedPreferences(RouterService.PREFS, Context.MODE_PRIVATE)
+                        .edit().putBoolean(RouterService.KEY_ALL_AUDIO, allAudio).commit();
+                Intent service = new Intent(context, RouterService.class);
+                service.setAction(RouterService.ACTION_RELOAD);
+                if (Build.VERSION.SDK_INT >= 26) {
+                    context.startForegroundService(service);
+                } else {
+                    context.startService(service);
+                }
+                Log.i(TAG, "debug allAudio=" + allAudio);
             } else if (ACTION_PLAY_TONE.equals(action)) {
                 HintUtil.setSpeakerMute(false);
                 TestTone.play(context);

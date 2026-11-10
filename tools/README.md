@@ -6,6 +6,7 @@
 |---|---|
 | `AudioProbe.java` | `amazon.media.AmazonAudioManager` を反射で取得し、`getHdmiOutStateHint()` の読み取りと `setHdmiOutStateHint()` の設定を行う |
 | `Beep2.java` | `AudioAttributes`（content / usage / flags）を指定して短いビープを再生する |
+| `SilentSpeaker.java` | 本体スピーカーに無音の `AudioTrack` を維持し、通常メディアまで Cube へルーティングさせる検証用プローブ |
 | `Probe.java` | AmazonAudioService の Binder を直接叩く解析用プローブ（`com.probe.untrusted` アプリの実体） |
 | `probe-AndroidManifest.xml` | `Probe.java` を debuggable アプリとして動かすための manifest |
 
@@ -30,7 +31,7 @@ cd "$ROOT"
 rm -rf tools/classes tools/dex
 mkdir -p tools/classes tools/dex
 "$JDK/bin/javac" -source 8 -target 8 -bootclasspath "$SDK/android.jar" \
-    -d tools/classes tools/AudioProbe.java tools/Beep2.java
+    -d tools/classes tools/AudioProbe.java tools/Beep2.java tools/SilentSpeaker.java
 "$BT/d8" --lib "$SDK/android.jar" --output tools/dex tools/classes/*.class
 adb push tools/dex/classes.dex /data/local/tmp/helper.dex
 ```
@@ -51,6 +52,18 @@ adb shell dumpsys media.audio_flinger | grep -E 'AudioOut_|Output device'
 ```
 
 `hint=0` のとき、AUTO_OUT は `AudioOut_D`（`0x2` / Speaker）、通常メディアは `AudioOut_15`（`0x40000000` / HDMI primary）になる。
+
+### 全音声モードの再現
+
+```bash
+# 本体スピーカーに無音トラックを 30 秒維持（usage=1 MEDIA, contentType=2 MUSIC）
+adb shell "CLASSPATH=/data/local/tmp/helper.dex app_process /system/bin SilentSpeaker 30"
+
+# 別シェルで通常メディアを鳴らすと、output 13 / AudioOut_D に載る
+adb shell "CLASSPATH=/data/local/tmp/helper.dex app_process /system/bin Beep2 2 1 0 4 440"
+```
+
+詳細と実測ログは `docs/README.md` 8.8 / 9.2 を参照。
 
 ## 3. hint の読み書き（要 MODIFY_AUDIO_SETTINGS）
 

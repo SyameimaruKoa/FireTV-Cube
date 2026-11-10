@@ -10,6 +10,7 @@ import android.os.Looper;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -19,6 +20,7 @@ import android.widget.TextView;
 public class MainActivity extends Activity {
     private TextView status;
     private Button toggle;
+    private CheckBox allAudio;
 
     private final Handler handler = new Handler(Looper.getMainLooper());
     private final Runnable refresh = new Runnable() {
@@ -77,9 +79,23 @@ public class MainActivity extends Activity {
         });
         root.addView(test);
 
+        allAudio = new CheckBox(this);
+        allAudio.setText("テレビを含むすべての音声をCubeから出す");
+        allAudio.setTextSize(20);
+        allAudio.setChecked(isAllAudioState());
+        allAudio.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                setAllAudioState(allAudio.isChecked());
+            }
+        });
+        root.addView(allAudio);
+
         TextView note = new TextView(this);
         note.setText("※ Alexa由来の音声（応答・音楽）がCube本体スピーカーから出ます。\n"
                 + "通常の動画アプリの音声はTV（HDMI）のままです。\n"
+                + "「すべての音声」をオンにすると、TVの映像はそのままに\n"
+                + "動画・音楽もCubeから鳴り、TVは無音になります。\n"
                 + "「テスト音」がCubeから聞こえればスピーカーは動作しています。");
         note.setTextSize(16);
         note.setTextColor(Color.GRAY);
@@ -99,6 +115,24 @@ public class MainActivity extends Activity {
     private boolean isEnabledState() {
         SharedPreferences sp = getSharedPreferences(RouterService.PREFS, MODE_PRIVATE);
         return sp.getBoolean(RouterService.KEY_ENABLED, true);
+    }
+
+    private boolean isAllAudioState() {
+        SharedPreferences sp = getSharedPreferences(RouterService.PREFS, MODE_PRIVATE);
+        return sp.getBoolean(RouterService.KEY_ALL_AUDIO, false);
+    }
+
+    private void setAllAudioState(boolean all) {
+        SharedPreferences sp = getSharedPreferences(RouterService.PREFS, MODE_PRIVATE);
+        sp.edit().putBoolean(RouterService.KEY_ALL_AUDIO, all).commit();
+        if (isEnabledState()) {
+            // Reload the running service so it starts/stops the silent
+            // speaker track immediately.
+            Intent service = new Intent(this, RouterService.class);
+            service.setAction(RouterService.ACTION_RELOAD);
+            startForegroundService(service);
+        }
+        updateUi();
     }
 
     private void setEnabledState(boolean enabled) {
@@ -122,6 +156,7 @@ public class MainActivity extends Activity {
     private void updateUi() {
         boolean enabled = isEnabledState();
         toggle.setText(enabled ? "無効にする" : "有効にする");
+        allAudio.setChecked(isAllAudioState());
 
         String hintText;
         try {
@@ -131,6 +166,9 @@ public class MainActivity extends Activity {
         }
         status.setText((enabled ? "状態: 有効" : "状態: 無効")
                 + "\nHDMI hint = " + hintText
+                + "\nモード: " + (isAllAudioState()
+                        ? "全音声 → Cube（TVは無音）"
+                        : "Alexaのみ → Cube / 通常メディア → HDMI")
                 + "\nスピーカーmute: " + (enabled ? "解除（サービスが維持）" : "通常"));
     }
 
