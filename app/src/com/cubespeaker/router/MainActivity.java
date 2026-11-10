@@ -38,7 +38,7 @@ public class MainActivity extends Activity {
         LinearLayout root = new LinearLayout(this);
         root.setOrientation(LinearLayout.VERTICAL);
         root.setGravity(Gravity.CENTER_HORIZONTAL);
-        root.setPadding(80, 80, 80, 80);
+        root.setPadding(80, 40, 80, 40);
         root.setBackgroundColor(Color.rgb(16, 16, 16));
 
         TextView title = new TextView(this);
@@ -92,12 +92,12 @@ public class MainActivity extends Activity {
         root.addView(allAudio);
 
         TextView note = new TextView(this);
-        note.setText("※ Alexa由来の音声（応答・音楽）がCube本体スピーカーから出ます。\n"
-                + "通常の動画アプリの音声はTV（HDMI）のままです。\n"
-                + "「すべての音声」をオンにすると、TVの映像はそのままに\n"
+        note.setText("※ Alexa由来の音声はCube本体スピーカーから出ます。\n"
+                + "通常の動画・音楽はTV（HDMI）のままです。\n"
+                + "「すべての音声」をオンにすると、映像はそのままに\n"
                 + "動画・音楽もCubeから鳴り、TVは無音になります。\n"
-                + "「テスト音」がCubeから聞こえればスピーカーは動作しています。");
-        note.setTextSize(16);
+                + "「テスト音」でスピーカーを確認できます。");
+        note.setTextSize(14);
         note.setTextColor(Color.GRAY);
         note.setGravity(Gravity.CENTER);
         note.setPadding(0, 40, 0, 0);
